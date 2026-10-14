@@ -32,14 +32,26 @@ ablation, v1 Table 5).
 
 Tested on: *fill in, e.g. MacBook Pro, Apple M5 Pro, 48 GB, macOS …, MPS backend*.
 
+Use an isolated Python 3.11 environment (never the base/system Python).
+With conda (Anaconda/Miniconda):
+
 ```bash
-python3.11 -m venv .venv && source .venv/bin/activate
+conda create -n mantis python=3.11 -y && conda activate mantis
 pip install -r requirements.txt
 pip freeze > requirements-lock.txt        # commit this
 
 # separate environment for the MOMENT baseline (conflicting pins)
-python3.11 -m venv .venv-moment
-.venv-moment/bin/pip install -r requirements-moment.txt
+conda create -n mantis-moment python=3.11 -y
+conda run -n mantis-moment pip install -r requirements-moment.txt
+```
+
+Without conda, `python3.11 -m venv` works the same way.
+
+Keep large files outside the repo (the scripts read these variables):
+
+```bash
+export MANTIS_DATA_DIR=~/mantis-work/data      # downloaded archives
+export MANTIS_CACHE_DIR=~/mantis-work/cache    # preprocessed data + embeddings
 ```
 
 Pin the checkpoint (hash printed by step 2 below):
@@ -71,7 +83,7 @@ python scripts/02_zero_shot.py --datasets ucr            # zero-shot, UCR-128
 python scripts/02_zero_shot.py --datasets uea            # zero-shot, UEA-27
 python scripts/02_zero_shot.py --datasets others         # zero-shot, 4 extra datasets
 python scripts/04_minirocket.py --datasets all           # MiniRocket baseline
-.venv-moment/bin/python scripts/05_moment.py --datasets all   # MOMENT baseline
+conda run -n mantis-moment python scripts/05_moment.py --datasets all   # MOMENT baseline
 python scripts/03_finetune.py --datasets tier1           # fine-tuning, 30 datasets, 4 regimes
 python scripts/03_finetune.py --datasets ECG200,GunPoint,Wafer --package-defaults --seeds 0
 python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr <LR>

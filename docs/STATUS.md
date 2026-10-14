@@ -1,6 +1,6 @@
 # Project status (for the group)
 
-Last updated: 14 October 2026, by Sai.
+Last updated: 15 October 2026, by Sai.
 
 ## Where things stand
 
@@ -37,7 +37,7 @@ Last updated: 14 October 2026, by Sai.
 
 ## What's next
 
-1. Install and run `00_dataset_stats.py`, `01_check_and_benchmark.py` on the M5 Pro; pin the checkpoint hash.
+1. ~~Install and run `00_dataset_stats.py`, `01_check_and_benchmark.py` on the M5 Pro; pin the checkpoint hash.~~ Done 15 Oct: 25/30 tier-1 datasets loaded (5 failed on a Zenodo outage, rerun pending); checks passed; tier-1 estimate ~2 h on MPS.
 2. Transcribe v1 Appendix Tables 3 and 4 into `targets/` (spot-check 10 rows).
 3. Zero-shot on all 159; MiniRocket in parallel.
 4. Tier-1 fine-tuning overnight; package-defaults comparison.

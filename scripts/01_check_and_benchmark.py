@@ -93,7 +93,10 @@ def main():
     # 2. parameter count
     net = load_mantis(device)
     report["n_params"] = count_params(net)
-    print(f"\n== parameters ==\n  MantisV1 / Mantis-8M: {report['n_params']:,}")
+    report["n_buffers"] = sum(b.numel() for b in net.buffers())
+    print(f"\n== parameters ==\n  MantisV1 / Mantis-8M: {report['n_params']:,} trainable"
+          f" + {report['n_buffers']:,} in buffers (e.g. positional encoding)"
+          f" = {report['n_params'] + report['n_buffers']:,} stored values")
 
     X = np.random.default_rng(1).standard_normal((512, 1, 512)).astype(np.float32)
     Z_dev = embed_raw(net, X, device)

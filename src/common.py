@@ -20,9 +20,9 @@ CACHE_DIR = Path(os.environ.get("MANTIS_CACHE_DIR", ROOT / "cache"))
 RESULTS_DIR = Path(os.environ.get("MANTIS_RESULTS_DIR", ROOT / "results"))
 
 CHECKPOINT = "paris-noah/Mantis-8M"
-# Pin the checkpoint so others get identical weights. Fill in the commit hash
-# printed by scripts/01_check_env.py on your first run, then keep it fixed.
-CHECKPOINT_REVISION = os.environ.get("MANTIS_REVISION") or None
+# Pinned Hugging Face commit of paris-noah/Mantis-8M (resolved 15 Oct 2026), so
+# every group member and every rerun uses byte-identical weights.
+CHECKPOINT_REVISION = os.environ.get("MANTIS_REVISION", "bc7d5ab40c02133386a28e2c127f35c17c86901d")
 
 
 def pick_device(name: str = "auto") -> str:

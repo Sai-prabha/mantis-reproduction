@@ -30,7 +30,8 @@ ablation, v1 Table 5).
 
 ## 1. Environment
 
-Tested on: *fill in, e.g. MacBook Pro, Apple M5 Pro, 48 GB, macOS …, MPS backend*.
+Tested on: MacBook Pro, Apple M5 Pro, 48 GB, Python 3.11.17, torch 2.14.1 (MPS backend),
+mantis-tsfm 1.1.0, aeon 1.6.0. Exact versions: `requirements-lock.txt`.
 
 Use an isolated Python 3.11 environment (never the base/system Python).
 With conda (Anaconda/Miniconda):
@@ -54,11 +55,9 @@ export MANTIS_DATA_DIR=~/mantis-work/data      # downloaded archives
 export MANTIS_CACHE_DIR=~/mantis-work/cache    # preprocessed data + embeddings
 ```
 
-Pin the checkpoint (hash printed by step 2 below):
-
-```bash
-export MANTIS_REVISION=<commit-hash>
-```
+The checkpoint is pinned in `src/common.py` to Hugging Face commit
+`bc7d5ab40c02133386a28e2c127f35c17c86901d` of `paris-noah/Mantis-8M`, so everyone
+gets identical weights.
 
 ## 2. Data
 

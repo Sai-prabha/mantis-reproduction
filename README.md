@@ -37,37 +37,51 @@ Use an isolated Python 3.11 environment (never the base/system Python).
 With conda (Anaconda/Miniconda):
 
 ```bash
-conda create -n mantis python=3.11 -y && conda activate mantis
+conda create -n mantis python=3.11 -y
+conda activate mantis
 pip install -r requirements.txt
-pip freeze > requirements-lock.txt        # commit this
+```
 
-# separate environment for the MOMENT baseline (conflicting pins)
+Exact versions used for the report are in `requirements-lock.txt`
+(`pip install -r requirements-lock.txt` reproduces them). Without conda,
+`python3.11 -m venv` works the same way.
+
+The MOMENT baseline needs its own environment, because `momentfm` pins old
+versions of numpy and transformers:
+
+```bash
 conda create -n mantis-moment python=3.11 -y
 conda run -n mantis-moment pip install -r requirements-moment.txt
 ```
 
-Without conda, `python3.11 -m venv` works the same way.
-
-Keep large files outside the repo (the scripts read these variables):
+Keep large files outside the repo. The scripts read these two variables
+(add them to `~/.zshrc` or `~/.bashrc`):
 
 ```bash
-export MANTIS_DATA_DIR=~/mantis-work/data      # downloaded archives
-export MANTIS_CACHE_DIR=~/mantis-work/cache    # preprocessed data + embeddings
+export MANTIS_DATA_DIR=~/mantis-work/data
+export MANTIS_CACHE_DIR=~/mantis-work/cache
 ```
+
+`MANTIS_DATA_DIR` holds the downloaded archives; `MANTIS_CACHE_DIR` holds
+preprocessed data and embeddings.
 
 The checkpoint is pinned in `src/common.py` to Hugging Face commit
 `bc7d5ab40c02133386a28e2c127f35c17c86901d` of `paris-noah/Mantis-8M`, so everyone
 gets identical weights.
 
+> **zsh users:** paste commands without trailing `# comments`. Interactive zsh
+> treats `#` as an argument unless you run `setopt interactivecomments`.
+
 ## 2. Data
 
-Datasets download automatically through aeon from timeseriesclassification.com
-into `data/`, and preprocessed copies are cached in `cache/`.
+Datasets download automatically on first use through aeon (from the archive's
+Zenodo records). Zenodo occasionally returns HTTP 503; rerun the same command
+later and already-downloaded datasets are skipped.
 
-```bash
-python scripts/00_dataset_stats.py --datasets all     # download + describe all 159
-python scripts/00_dataset_stats.py --datasets tier1   # stats for the fine-tuning subset
-```
+| Command | What it does |
+|---|---|
+| `python scripts/00_dataset_stats.py --datasets all` | Download and describe all 159 zero-shot datasets |
+| `python scripts/00_dataset_stats.py --datasets tier1` | Download and describe the 30 tier-1 fine-tuning datasets |
 
 Preprocessing (identical for every method): raw archive files
 (`load_equal_length=False, load_no_missing=False` set explicitly, because
@@ -76,18 +90,20 @@ missing values, linear resizing of every series to length 512.
 
 ## 3. Commands for each result
 
-```bash
-python scripts/01_check_and_benchmark.py                 # environment checks + timing
-python scripts/02_zero_shot.py --datasets ucr            # zero-shot, UCR-128
-python scripts/02_zero_shot.py --datasets uea            # zero-shot, UEA-27
-python scripts/02_zero_shot.py --datasets others         # zero-shot, 4 extra datasets
-python scripts/04_minirocket.py --datasets all           # MiniRocket baseline
-conda run -n mantis-moment python scripts/05_moment.py --datasets all   # MOMENT baseline
-python scripts/03_finetune.py --datasets tier1           # fine-tuning, 30 datasets, 4 regimes
-python scripts/03_finetune.py --datasets ECG200,GunPoint,Wafer --package-defaults --seeds 0
-python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr <LR>
-python scripts/06_summarise.py                           # tables + figures
-```
+Run from the repo root with the `mantis` environment active.
+
+| Command | Result |
+|---|---|
+| `python scripts/01_check_and_benchmark.py` | Environment checks, MPS vs CPU, timing |
+| `python scripts/02_zero_shot.py --datasets ucr` | Zero-shot, UCR-128 |
+| `python scripts/02_zero_shot.py --datasets uea` | Zero-shot, UEA-27 |
+| `python scripts/02_zero_shot.py --datasets others` | Zero-shot, 4 extra datasets |
+| `python scripts/04_minirocket.py --datasets all` | MiniRocket baseline |
+| `conda run -n mantis-moment python scripts/05_moment.py --datasets all` | MOMENT baseline |
+| `python scripts/03_finetune.py --datasets tier1` | Fine-tuning: 30 datasets, 4 regimes, calibration |
+| `python scripts/03_finetune.py --datasets ECG200,GunPoint,Wafer --package-defaults --seeds 0` | Package defaults vs paper protocol |
+| `python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr <LR>` | Fine-tuning breadth (tier 2) |
+| `python scripts/06_summarise.py` | All tables, figures and the results table below |
 
 Every script appends to a CSV in `results/` and skips work already recorded,
 so an interrupted run resumes where it stopped.

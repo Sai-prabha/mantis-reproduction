@@ -1,0 +1,31 @@
+name,n_train,n_test,n_classes,n_channels,min_len,max_len,unequal_length,n_missing_values,status
+BeetleFly,20.0,20.0,2.0,1.0,512.0,512.0,0.0,0.0,ok
+Chinatown,20.0,343.0,2.0,1.0,24.0,24.0,0.0,0.0,ok
+TwoLeadECG,23.0,1139.0,2.0,1.0,82.0,82.0,0.0,0.0,ok
+DiatomSizeReduction,16.0,306.0,4.0,1.0,345.0,345.0,0.0,0.0,ok
+Coffee,28.0,28.0,2.0,1.0,286.0,286.0,0.0,0.0,ok
+Beef,30.0,30.0,5.0,1.0,470.0,470.0,0.0,0.0,ok
+CBF,30.0,900.0,3.0,1.0,128.0,128.0,0.0,0.0,ok
+Rock,20.0,50.0,4.0,1.0,2844.0,2844.0,0.0,0.0,ok
+HouseTwenty,40.0,119.0,2.0,1.0,2000.0,2000.0,0.0,0.0,ok
+CinCECGTorso,40.0,1380.0,4.0,1.0,1639.0,1639.0,0.0,0.0,ok
+GunPoint,50.0,150.0,2.0,1.0,150.0,150.0,0.0,0.0,ok
+Herring,64.0,64.0,2.0,1.0,512.0,512.0,0.0,0.0,ok
+ItalyPowerDemand,67.0,1029.0,2.0,1.0,24.0,24.0,0.0,0.0,ok
+Lightning7,70.0,73.0,7.0,1.0,319.0,319.0,0.0,0.0,ok
+DodgerLoopDay,78.0,80.0,7.0,1.0,288.0,288.0,0.0,337.0,ok
+ECG200,100.0,100.0,2.0,1.0,96.0,96.0,0.0,0.0,ok
+GesturePebbleZ1,132.0,172.0,6.0,1.0,100.0,455.0,1.0,0.0,ok
+Worms,181.0,77.0,5.0,1.0,900.0,900.0,0.0,0.0,ok
+Phoneme,214.0,1896.0,39.0,1.0,1024.0,1024.0,0.0,0.0,ok
+Computers,250.0,250.0,2.0,1.0,720.0,720.0,0.0,0.0,ok
+AllGestureWiimoteX,,,,,,,,,failed: ValueError: Could not download files for AllGestureWiimoteX from Zenodo record 11185036: ValueError: Failed to download file 'AllGestureWiimoteX_TEST.ts' from record 11185036: HTTP Error 503: Service Unavailable
+Earthquakes,,,,,,,,,failed: ValueError: Could not download files for Earthquakes from Zenodo record 11186659: ValueError: Failed to retrieve Zenodo metadata for record 11186659: HTTP Error 503: Service Unavailable
+MedicalImages,,,,,,,,,failed: ValueError: Could not download files for MedicalImages from Zenodo record 11197752: ValueError: Failed to retrieve Zenodo metadata for record 11197752: HTTP Error 503: Service Unavailable
+Adiac,,,,,,,,,failed: ValueError: Could not download files for Adiac from Zenodo record 11179788: ValueError: Failed to retrieve Zenodo metadata for record 11179788: HTTP Error 503: Service Unavailable
+FiftyWords,,,,,,,,,failed: ValueError: Could not download files for FiftyWords from Zenodo record 11191097: ValueError: Failed to retrieve Zenodo metadata for record 11191097: HTTP Error 503: Service Unavailable
+SwedishLeaf,500.0,625.0,15.0,1.0,128.0,128.0,0.0,0.0,ok
+Strawberry,613.0,370.0,2.0,1.0,235.0,235.0,0.0,0.0,ok
+Wafer,1000.0,6164.0,2.0,1.0,152.0,152.0,0.0,0.0,ok
+MelbournePedestrian,1194.0,2439.0,10.0,1.0,9.0,24.0,1.0,235.0,ok
+FordA,3601.0,1320.0,2.0,1.0,500.0,500.0,0.0,0.0,ok

@@ -13,6 +13,7 @@ Preprocessing choices (state these in Section 2 of the report):
   * No extra normalisation: Mantis instance-normalises inside its forward pass.
 """
 import inspect
+import json
 
 import numpy as np
 import torch
@@ -91,8 +92,25 @@ def load_dataset(name: str, length: int = SEQ_LEN, use_cache: bool = True) -> di
     """Load train/test, preprocess, encode labels. Cached as .npz after the first call."""
     cache = CACHE_DIR / "data" / f"{name}_len{length}.npz"
     if use_cache and cache.exists():
-        z = np.load(cache, allow_pickle=True)
-        return {k: (z[k].item() if z[k].dtype == object and z[k].shape == () else z[k]) for k in z.files}
+        with np.load(cache, allow_pickle=False) as z:
+            files = set(z.files)
+            if "meta_json" in files:
+                out = {k: z[k] for k in ("X_train", "y_train", "X_test", "y_test")}
+                out["meta"] = json.loads(str(z["meta_json"]))
+                return out
+        # Old cache format: 'meta' was a pickled object array. numpy 2 pickles
+        # reference numpy._core, which numpy 1.x (the MOMENT env) cannot load.
+        try:
+            z = np.load(cache, allow_pickle=True)
+            out = {k: z[k] for k in ("X_train", "y_train", "X_test", "y_test")}
+            out["meta"] = z["meta"].item()
+        except ModuleNotFoundError as e:
+            raise RuntimeError(
+                f"{cache.name} is in the old cache format, which this numpy version cannot read. "
+                "Convert it once from the main environment: "
+                "`conda activate mantis && python scripts/00_dataset_stats.py --datasets all`") from e
+        _save_cache(cache, out)  # migrate to the portable format
+        return out
 
     Xtr, ytr = _load_raw(name, "train")
     Xte, yte = _load_raw(name, "test")
@@ -117,7 +135,14 @@ def load_dataset(name: str, length: int = SEQ_LEN, use_cache: bool = True) -> di
     }
     out = {"X_train": Xtr, "y_train": enc.transform(ytr), "X_test": Xte,
            "y_test": enc.transform(yte), "meta": meta}
-    cache.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(cache, **{k: (np.array(v, dtype=object) if k == "meta" else v)
-                                  for k, v in out.items()})
+    _save_cache(cache, out)
     return out
+
+
+def _save_cache(cache, out: dict) -> None:
+    """Portable cache: plain numeric arrays plus metadata as a JSON string (no
+    pickled objects), so numpy 1.x and 2.x environments can both read it."""
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(cache, X_train=out["X_train"], y_train=out["y_train"],
+                        X_test=out["X_test"], y_test=out["y_test"],
+                        meta_json=np.array(json.dumps(out["meta"])))

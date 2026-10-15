@@ -13,6 +13,53 @@
       "ties": 5,
       "losses": 126,
       "wilcoxon_p": 6.734327818578562e-17
+    },
+    "MOMENT-1-large": {
+      "n": 128,
+      "mean_diff": 0.01574554951642249,
+      "wins": 73,
+      "ties": 1,
+      "losses": 54,
+      "wilcoxon_p": 0.05763298386246448
+    },
+    "mantis_minus_moment": {
+      "paper": NaN,
+      "ours": NaN,
+      "n": 0
+    }
+  },
+  "full_vs_zero_shot_by_tier": {
+    "tier 1 (3 seeds, LR selected)": {
+      "n": 30,
+      "mean_diff": 0.041255633798732906,
+      "wins": 24,
+      "ties": 1,
+      "losses": 5,
+      "wilcoxon_p": 6.4782798290252686e-06
+    },
+    "tier 1, seed 0 only": {
+      "n": 30,
+      "mean_diff": 0.04133999067240236,
+      "wins": 23,
+      "ties": 1,
+      "losses": 6,
+      "wilcoxon_p": 3.628432750701904e-05
+    },
+    "tier 2 (seed 0, LR 1e-3)": {
+      "n": 83,
+      "mean_diff": 0.037774237365398255,
+      "wins": 61,
+      "ties": 5,
+      "losses": 17,
+      "wilcoxon_p": 7.813727046186204e-06
+    },
+    "tiers 1+2 (seed 0)": {
+      "n": 113,
+      "mean_diff": 0.03872089753539935,
+      "wins": 84,
+      "ties": 6,
+      "losses": 23,
+      "wilcoxon_p": 9.439890602432072e-09
     }
   },
   "full_minus_scratch": {
@@ -54,6 +101,14 @@
   },
   "ts_gain_by_val_size": {
     "n_val<=10": -0.008187520669455663,
-    "n_val>10": 0.06568883751717718
+    "n_val>10": 0.06568883751717718,
+    "n_datasets_small": 11,
+    "n_datasets_large": 19
+  },
+  "ts_gain_by_val_size_both_tiers_seed0": {
+    "n_val<=10": -0.02187361375599787,
+    "n_val>10": 0.07322921013658182,
+    "n_datasets_small": 32,
+    "n_datasets_large": 81
   }
 }

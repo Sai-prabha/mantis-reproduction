@@ -5,5 +5,54 @@
     "ucr_cross_check_2602.17868": 0.7921,
     "seed_std_median": 0.006553667610299142
   },
-  "baselines": {}
+  "baselines": {
+    "MiniRocket": {
+      "n": 158,
+      "mean_diff": -0.05575402574274565,
+      "wins": 27,
+      "ties": 5,
+      "losses": 126,
+      "wilcoxon_p": 6.734327818578562e-17
+    }
+  },
+  "full_minus_scratch": {
+    "ours_last": 0.06349454168952014,
+    "paper_last": 0.0508,
+    "ours_best_oracle": 0.05549997949809179,
+    "paper_best": 0.0392,
+    "test_last": {
+      "n": 30,
+      "mean_diff": 0.06349454168952014,
+      "wins": 28,
+      "ties": 1,
+      "losses": 1,
+      "wilcoxon_p": 1.862645149230957e-08
+    }
+  },
+  "best_epoch_effect_full": {
+    "last": 0.8444976109346827,
+    "val_selected": 0.8420537348762751,
+    "oracle_test_selected": 0.8549265087708032
+  },
+  "selected_lr_counts": {
+    "rf": {},
+    "head": {
+      "0.001": 29,
+      "0.0002": 1
+    },
+    "full": {
+      "0.001": 15,
+      "0.0001": 9,
+      "0.0002": 6
+    },
+    "scratch": {
+      "0.0002": 14,
+      "0.0001": 8,
+      "0.001": 8
+    }
+  },
+  "ts_gain_by_val_size": {
+    "n_val<=10": -0.008187520669455663,
+    "n_val>10": 0.06568883751717718
+  }
 }

@@ -1,0 +1,9 @@
+{
+  "zero_shot": {
+    "ucr_mean_ours": 0.7925005920357954,
+    "ucr_n": 128,
+    "ucr_cross_check_2602.17868": 0.7921,
+    "seed_std_median": 0.006553667610299142
+  },
+  "baselines": {}
+}

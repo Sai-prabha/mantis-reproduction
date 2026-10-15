@@ -1,0 +1,2 @@
+dataset,layer,token,error
+EMOPain,-1,cls_token,"ValueError: File name EMOPain is not in the list of valid files to download, see aeon.datasets.tser_datasets.tsr_zenodo for the list of valid keys for regression and aeon.datasets.tsc_datasets.tsc_zenodo for classification."

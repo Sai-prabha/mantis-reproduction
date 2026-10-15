@@ -116,7 +116,12 @@ markers below; never edit it by hand. Paper numbers come from v1's appendix
 tables and figures are in `results/tables/` and `results/figures/`.
 
 <!-- RESULTS-TABLE:START -->
-*Pending: no experiments have been run yet.*
+| Setting                                           |   Datasets | Paper (v1)   | Ours    | Δ        | Wilcoxon p   |
+|:--------------------------------------------------|-----------:|:-------------|:--------|:---------|:-------------|
+| Zero-shot, UCR (RF200, last layer, CLS)           |          0 | pending      | pending | pending  |              |
+| Zero-shot, UEA (RF200, last layer, CLS)           |          0 | pending      | pending | pending  |              |
+| Zero-shot, other 4 (RF200, last layer, CLS)       |          0 | pending      | pending | pending  |              |
+| Zero-shot, UCR-128 cross-check (arXiv 2602.17868) |        128 | 0.7921       | 0.7925  | +0.04 pp |              |
 <!-- RESULTS-TABLE:END -->
 
 ## 5. Deviations from the paper

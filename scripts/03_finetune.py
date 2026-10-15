@@ -40,7 +40,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.common import (CHECKPOINT_REVISION, RESULTS_DIR, CsvLog, env_info,  # noqa: E402
-                        pick_device, set_seed, sync)
+                        pick_device, require_env, set_seed, sync)
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
@@ -198,6 +198,7 @@ def run_package_defaults(Xtr, ytr, Xva, yva, Xte, yte, seed, device):
 # ------------------------------------------------------------------- main --
 
 def main():
+    require_env()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--datasets", default="tier1")
     ap.add_argument("--regimes", default="rf,head,full,scratch")

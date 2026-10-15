@@ -14,7 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from src.common import RESULTS_DIR  # noqa: E402
+from src.common import RESULTS_DIR, require_env  # noqa: E402
 
 import pandas as pd  # noqa: E402
 
@@ -23,6 +23,7 @@ from src.data import load_dataset  # noqa: E402
 
 
 def main():
+    require_env()
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", default="tier1")
     ap.add_argument("--out", default=None)

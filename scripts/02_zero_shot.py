@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.common import (CHECKPOINT_REVISION, RESULTS_DIR, CsvLog, env_info,  # noqa: E402
-                        pick_device)
+                        pick_device, require_env)
 
 import numpy as np  # noqa: E402
 from sklearn.ensemble import RandomForestClassifier  # noqa: E402
@@ -45,6 +45,7 @@ def archive_of(name: str) -> str:
 
 
 def main():
+    require_env()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--datasets", default="ucr")
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])

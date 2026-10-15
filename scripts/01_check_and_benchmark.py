@@ -21,7 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.common import (CHECKPOINT, CHECKPOINT_REVISION, RESULTS_DIR, env_info,  # noqa: E402
-                        pick_device, save_json, set_seed, sync)
+                        pick_device, require_env, save_json, set_seed, sync)
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
@@ -73,6 +73,7 @@ def time_finetune_step(device, n_steps=6, bs=256, n_classes=5):
 
 
 def main():
+    require_env()
     device = pick_device("auto")
     report = {"env": env_info(device)}
     print("== environment ==")

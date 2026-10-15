@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from src.common import RESULTS_DIR, CsvLog, env_info  # noqa: E402
+from src.common import RESULTS_DIR, CsvLog, env_info, require_env  # noqa: E402
 
 from configs.datasets import resolve  # noqa: E402
 from src.data import load_dataset  # noqa: E402
@@ -27,6 +27,7 @@ def make_minirocket(seed: int, n_jobs: int):
 
 
 def main():
+    require_env()
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", default="ucr")
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])

@@ -31,7 +31,7 @@ import torch  # noqa: E402
 from sklearn.ensemble import RandomForestClassifier  # noqa: E402
 
 from configs.datasets import resolve  # noqa: E402
-from src.common import CACHE_DIR, RESULTS_DIR, CsvLog, env_info, pick_device  # noqa: E402
+from src.common import CACHE_DIR, RESULTS_DIR, CsvLog, env_info, pick_device, require_env  # noqa: E402
 from src.data import load_dataset  # noqa: E402
 
 MODEL_ID = "AutonLab/MOMENT-1-large"
@@ -57,6 +57,7 @@ def embed_moment(model, X: np.ndarray, device: str, bs: int = 64) -> np.ndarray:
 
 
 def main():
+    require_env()
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", default="ucr")
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])

@@ -15,6 +15,7 @@ tmp = Path(tempfile.mkdtemp(prefix="mantis_smoke_"))
 os.environ["MANTIS_RESULTS_DIR"] = str(tmp / "results")
 os.environ["MANTIS_CACHE_DIR"] = str(tmp / "cache")
 os.environ["MANTIS_DATA_DIR"] = str(tmp / "data")
+os.environ["MANTIS_ALLOW_ANY_ENV"] = "1"  # the smoke test may run on any Python
 sys.path.insert(0, str(ROOT))
 
 import numpy as np  # noqa: E402

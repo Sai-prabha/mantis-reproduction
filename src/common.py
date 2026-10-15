@@ -25,6 +25,17 @@ CHECKPOINT = "paris-noah/Mantis-8M"
 CHECKPOINT_REVISION = os.environ.get("MANTIS_REVISION", "bc7d5ab40c02133386a28e2c127f35c17c86901d")
 
 
+def require_env() -> None:
+    """Stop if the scripts are run outside the project's Python 3.11 environment.
+    Mixing environments (e.g. conda base) silently changes package versions
+    between result rows. Override with MANTIS_ALLOW_ANY_ENV=1."""
+    import sys
+    if sys.version_info[:2] != (3, 11) and not os.environ.get("MANTIS_ALLOW_ANY_ENV"):
+        sys.exit(f"Wrong Python environment: Python {platform.python_version()} at {sys.executable}.\n"
+                 "Run `conda activate mantis` (Python 3.11) and try again. "
+                 "Set MANTIS_ALLOW_ANY_ENV=1 only if you really mean to override.")
+
+
 def pick_device(name: str = "auto") -> str:
     if name != "auto":
         return name

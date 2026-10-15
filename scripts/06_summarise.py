@@ -289,7 +289,10 @@ def headline():
     for arch, label in [("ucr", "Zero-shot, UCR"), ("uea", "Zero-shot, UEA"), ("other", "Zero-shot, other 4")]:
         paper = mine = p = None
         n = 0
-        if zs is not None and t3 is not None:
+        if zs is not None:
+            a = ours[ours.archive == arch]
+            n, mine = len(a), (a.accuracy.mean() if len(a) else None)  # ours even before targets exist
+        if zs is not None and t3 is not None and t3["mantis"].notna().any():
             m = ours[ours.archive == arch].merge(t3[["dataset", "mantis"]], on="dataset").dropna()
             n = len(m)
             if n:
@@ -331,10 +334,15 @@ def headline():
                          "Paper (v1)": fmt(PAPER_FULL_MINUS_SCRATCH[label.split()[0]], pct=True),
                          "Ours": fmt(g.get(key), pct=True), "Δ": "", "Wilcoxon p": ""})
     mm = summary.get("baselines", {}).get("mantis_minus_moment")
-    if mm:
+    mo = summary.get("baselines", {}).get("MOMENT-1-large")
+    if mm and mm["n"]:
         rows.append({"Setting": "Zero-shot, Mantis minus MOMENT", "Datasets": mm["n"],
                      "Paper (v1)": fmt(mm["paper"], pct=True), "Ours": fmt(mm["ours"], pct=True),
-                     "Δ": "", "Wilcoxon p": ""})
+                     "Δ": "", "Wilcoxon p": f"{mo['wilcoxon_p']:.3f}" if mo and "wilcoxon_p" in mo else ""})
+    elif mo:  # no paper targets yet: show ours over every dataset both models ran on
+        rows.append({"Setting": "Zero-shot, Mantis minus MOMENT", "Datasets": mo["n"],
+                     "Paper (v1)": fmt(None), "Ours": fmt(mo["mean_diff"], pct=True),
+                     "Δ": "", "Wilcoxon p": f"{mo['wilcoxon_p']:.3f}" if "wilcoxon_p" in mo else ""})
     if not rows:
         return
     table = pd.DataFrame(rows).to_markdown(index=False)

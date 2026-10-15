@@ -22,6 +22,7 @@ from scipy.stats import wilcoxon  # noqa: E402
 
 from src.calibration import ece, softmax  # noqa: E402
 from src.common import RESULTS_DIR, ROOT  # noqa: E402
+from configs.datasets import TIER1  # noqa: E402
 
 TABLES, FIGS = RESULTS_DIR / "tables", RESULTS_DIR / "figures"
 TARGETS = ROOT / "targets"
@@ -121,8 +122,15 @@ def finetune():
     if ft is None:
         print("no finetune.csv yet")
         return
-    final = ft[ft.is_final == 1]
+    final_all = ft[ft.is_final == 1].copy()
+    final_all["tier"] = np.where(final_all.dataset.isin(TIER1), 1, 2)
+    # Regime comparisons, calibration and LR selection use tier 1 only: tier 2 has
+    # only the full regime, one seed and a fixed LR, so pooling it would compare
+    # 'full' on 113 datasets against the other regimes on 30.
+    final = final_all[final_all.tier == 1]
+    ft = ft[ft.dataset.isin(TIER1)]
     regimes = [r for r in ["rf", "head", "full", "scratch", "full_pkg_defaults"] if r in set(final.regime)]
+    tiers(final_all)
 
     # accuracy per regime (last epoch), averaged over seeds then datasets
     rows = []
@@ -130,7 +138,7 @@ def finetune():
         d = final[final.regime == r].groupby("dataset")[["acc_last", "acc_val_selected",
                                                          "acc_oracle_best_test"]].mean()
         rows.append({"regime": r, "datasets": len(d), **d.mean(numeric_only=True).to_dict()})
-    to_md(pd.DataFrame(rows), "ft_regimes")
+    to_md(pd.DataFrame(rows), "ft_regimes")  # tier 1 only
 
     wide = final.groupby(["dataset", "regime"])[["acc_last", "acc_oracle_best_test"]].mean().unstack()
     if {"full", "scratch"} <= set(regimes):
@@ -150,7 +158,9 @@ def finetune():
 
         tgt = read(TARGETS / "v1_table4_finetune.csv")
         if tgt is not None and tgt["mantis"].notna().any():
-            ours_ft = f.groupby("dataset").acc_last.agg(["mean", "std"]).reset_index()
+            # both tiers: tier 1 averaged over 3 seeds, tier 2 is seed 0 only
+            ours_ft = final_all[final_all.regime == "full"].groupby(["dataset", "tier"]).acc_last \
+                .agg(["mean", "std"]).reset_index()
             m = ours_ft.merge(tgt[["dataset", "mantis"]], on="dataset").dropna()
             m["delta"] = m["mean"] - m["mantis"]
             summary["finetune_vs_paper"] = paired_test(m["mean"], m["mantis"])
@@ -166,8 +176,46 @@ def finetune():
         f["ts_gain"] = f.ece_raw - f.ece_ts
         small = f.n_val <= 10
         summary["ts_gain_by_val_size"] = {"n_val<=10": float(f[small].ts_gain.mean()),
-                                          "n_val>10": float(f[~small].ts_gain.mean())}
+                                          "n_val>10": float(f[~small].ts_gain.mean()),
+                                          "n_datasets_small": int(f[small].dataset.nunique()),
+                                          "n_datasets_large": int(f[~small].dataset.nunique())}
+        # same split over both tiers (full regime, seed 0), for more datasets per bin
+        fa = final_all[(final_all.regime == "full") & (final_all.seed == 0)].copy()
+        fa["ts_gain"] = fa.ece_raw - fa.ece_ts
+        sm = fa.n_val <= 10
+        summary["ts_gain_by_val_size_both_tiers_seed0"] = {
+            "n_val<=10": float(fa[sm].ts_gain.mean()), "n_val>10": float(fa[~sm].ts_gain.mean()),
+            "n_datasets_small": int(sm.sum()), "n_datasets_large": int((~sm).sum())}
         reliability(final)
+
+
+def tiers(final_all):
+    """Full fine-tuning on tier 1 vs tier 2, and fine-tuning gain over zero-shot RF."""
+    f = final_all[final_all.regime == "full"]
+    if f.empty:
+        return
+    zs = read(RESULTS_DIR / "zero_shot.csv")
+    zs_mean = None
+    if zs is not None:
+        zs = zs[(zs.layer == -1) & (zs.token == "cls_token")] if {"layer", "token"} <= set(zs.columns) else zs
+        zs_mean = zs.groupby("dataset").accuracy.mean()
+    rows, out = [], {}
+    groups = [("tier 1 (3 seeds, LR selected)", f[f.tier == 1], None),
+              ("tier 1, seed 0 only", f[(f.tier == 1) & (f.seed == 0)], None),
+              ("tier 2 (seed 0, LR 1e-3)", f[f.tier == 2], None),
+              ("tiers 1+2 (seed 0)", f[f.seed == 0], None)]
+    for label, g, _ in groups:
+        d = g.groupby("dataset").acc_last.mean()
+        row = {"set": label, "datasets": len(d), "full_acc_last": d.mean()}
+        if zs_mean is not None:
+            t = paired_test(d, zs_mean.reindex(d.index))
+            row.update({"zero_shot_rf": zs_mean.reindex(d.index).mean(), "gain": t["mean_diff"],
+                        "wins/ties/losses": f"{t['wins']}/{t['ties']}/{t['losses']}",
+                        "wilcoxon_p": t.get("wilcoxon_p", np.nan)})
+            out[label] = t
+        rows.append(row)
+    to_md(pd.DataFrame(rows), "ft_full_by_tier")
+    summary["full_vs_zero_shot_by_tier"] = out
 
 
 # ----------------------------------------------------------------- plots --
@@ -190,7 +238,7 @@ def reliability(final, n_plots=3, n_bins=10):
     on the tier-1 datasets with the largest test sets."""
     import matplotlib.pyplot as plt
     from src.calibration import fit_temperature
-    f = final[(final.regime == "full") & (final.seed == final.seed.min())]
+    f = final[(final.regime == "full") & (final.seed == final.seed.min()) & final.dataset.isin(TIER1)]
     picks = f.sort_values("n_test", ascending=False).head(n_plots)
     if picks.empty:
         return
@@ -261,18 +309,21 @@ def headline():
     t4 = read(TARGETS / "v1_table4_finetune.csv")
     if ft is not None:
         final = ft[ft.is_final == 1]
-        full = final[final.regime == "full"].groupby("dataset").acc_last.mean().reset_index()
-        paper = mine = p = None
-        n = 0
-        if t4 is not None and len(full):
-            m = full.merge(t4[["dataset", "mantis"]], on="dataset").dropna()
-            n = len(m)
-            if n:
-                paper, mine = m.mantis.mean(), m.acc_last.mean()
-                p = paired_test(m.acc_last, m.mantis).get("wilcoxon_p")
-        rows.append({"Setting": "Full fine-tuning (tier 1)", "Datasets": n, "Paper (v1)": fmt(paper),
-                     "Ours": fmt(mine), "Δ": fmt(None if paper is None else mine - paper, pct=True),
-                     "Wilcoxon p": "" if p is None else f"{p:.3f}"})
+        full_all = final[final.regime == "full"]
+        for label, sub in [("Full fine-tuning, tier 1 (3 seeds)", full_all[full_all.dataset.isin(TIER1)]),
+                           ("Full fine-tuning, tiers 1+2 (seed 0)", full_all[full_all.seed == 0])]:
+            full = sub.groupby("dataset").acc_last.mean().reset_index()
+            paper, mine, p = None, (full.acc_last.mean() if len(full) else None), None
+            n = len(full)
+            if t4 is not None and t4["mantis"].notna().any() and len(full):
+                m = full.merge(t4[["dataset", "mantis"]], on="dataset").dropna()
+                n = len(m)
+                if n:
+                    paper, mine = m.mantis.mean(), m.acc_last.mean()
+                    p = paired_test(m.acc_last, m.mantis).get("wilcoxon_p")
+            rows.append({"Setting": label, "Datasets": n, "Paper (v1)": fmt(paper),
+                         "Ours": fmt(mine), "Δ": fmt(None if paper is None else mine - paper, pct=True),
+                         "Wilcoxon p": "" if p is None else f"{p:.3f}"})
         g = summary.get("full_minus_scratch", {})
         for key, pkey, label in [("ours_last", "paper_last", "last epoch"),
                                  ("ours_best_oracle", "paper_best", "best epoch")]:

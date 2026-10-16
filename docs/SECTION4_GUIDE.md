@@ -1,13 +1,28 @@
-# Guide for Abel and Andrew: Section 4 and the remaining report work
+# Guide for Andrew and Abel: Section 4 and the rest of the report
 
 Last updated: 16 October 2026, by Sai.
 
-Sections 2 and 3 (reproduction) are drafted and every experiment behind them is
-finished and in this repo. This guide covers what is left:
+Sections 2 and 3 (reproduction) are drafted, every experiment behind them is
+finished and in this repo, and the repo itself (Section 5) is in place. This guide
+covers everything that is left, so that every part of the report has an owner.
 
-- **Section 4, Improvements (30 marks).** Abel leads, with Andrew. Most of this guide.
-- **Section 1, Motivation (10 marks)** and the **work-plan page**. Owners to agree in the group chat (Section 7 below).
-- Shared jobs before submission (Section 8 below).
+## 0. Every part of the report, and where it stands
+
+The spec asks for 6 pages of content in IEEE double-column format, plus 1 page for
+the work plan and 1 to 2 pages of references, with the repo link in the report.
+
+| Part | Marks | Who | Status | Where this guide helps |
+|---|---|---|---|---|
+| Title, abstract, introduction | (part of 1) | to agree | not started | Section 7 |
+| 1. Motivation and impact | 10 | to agree | not started | Section 7 |
+| 2. Approach to reproduction | 10 | Sai | draft done | read it before starting Section 4 |
+| 3. Lessons learned | 30 | Sai | draft done | Section 2 of this guide summarises it |
+| 4. Improvements | 30 | Andrew and Abel (split and lead decided between you) | not started | Sections 1 to 6 |
+| 5. GitHub repo and README | 20 | Sai, with everyone adding their own commands | reproduction part done | Section 5, rules 4 and 5 |
+| Conclusion (short) | (part of 4) | to agree | not started | Section 7 |
+| Work-plan page | required | to agree, everyone contributes | not started | Section 7 |
+| References | 1 to 2 pages, not counted | everyone adds theirs | Sai's list ready | Section 8 |
+| Generative AI declaration | required | everyone | not started | Section 8 |
 
 Read `docs/STATUS.md` for decisions already locked, and skim the Section 2–3
 draft so Section 4 builds on what we found rather than repeating it.
@@ -64,14 +79,6 @@ conda activate mantis
 pip install -r requirements.txt
 ```
 
-If you cloned before 16 October, Sai rewrote the history, so reset once
-(this discards local changes, so commit or copy anything you need first):
-
-```bash
-git fetch
-git reset --hard origin/main
-```
-
 ### 3.2 Keep data and caches outside the repo
 
 Add these to `~/.zshrc` (or `~/.bashrc`), then open a new terminal:
@@ -125,8 +132,8 @@ argument parsing, the dataset loop, caching, failure logging and the CSV row for
 ## 4. Recommended improvements
 
 Pick **A and B** as the core (one accuracy, one calibration, each tied to a
-Section 3 finding). Add **C** if time allows. A suggested split: Abel takes A
-(and C), Andrew takes B. Agree it in the group chat.
+Section 3 finding). Add **C** if time allows. A and B share no code, so the two of
+you can work on them in parallel; how you split them is up to you.
 
 ### Improvement A: fuse Mantis and MiniRocket features (accuracy, non-trivial)
 
@@ -248,8 +255,8 @@ These keep Section 4 as rigorous as Section 3 and protect the Section 5 marks.
 
 ## 6. Working in the repo together
 
-- Work on a branch: `git checkout -b section4-abel` (or `section4-andrew`), push it,
-  and open a pull request into `main` when a result is finished.
+- Work on your own branch (`git checkout -b section4-<your-name>`), push it, and open
+  a pull request into `main` when a result is finished.
 - Don't edit files someone else's script writes, and don't run the same script into the
   same CSV on two machines (merge conflicts in CSVs are painful). Use your own output file.
 - `data/` and `cache/` stay out of git; each machine builds its own.
@@ -257,7 +264,13 @@ These keep Section 4 as rigorous as Section 3 and protect the Section 5 marks.
 
 ---
 
-## 7. Section 1 and the work-plan page
+## 7. Abstract, Section 1, conclusion and the work-plan page
+
+### Title, abstract and introduction
+
+A title, a 150 to 200 word abstract (what we reproduced, the headline numbers, what we
+improved) and a short introduction that leads into Section 1. Write the abstract last,
+once Section 4 has numbers.
 
 ### Section 1: Motivation and impact (10 marks, about 0.75 page with the abstract and introduction)
 
@@ -279,6 +292,10 @@ AI/ML community. Points to cover:
 
 Cite v1 as arXiv 2502.15637**v1**: later versions describe a different model.
 
+### Conclusion (a few sentences at the end of Section 4)
+
+What reproduced, what did not, what the improvements added, and one line of future work.
+
 ### Work-plan page (1 extra page, required)
 
 The spec asks for the project work plan, how the work was divided, and each
@@ -288,6 +305,7 @@ Remember the generative AI declaration the module requires.
 
 ## 8. Shared checklist before submission
 
+- [ ] Every part in the table in Section 0 has an owner agreed in the group chat.
 - [ ] Section 4 results merged into `main`; README commands table updated.
 - [ ] References from all sections merged into one `.bib` (Sai's are in the Section 2–3 bundle).
 - [ ] Whole report compiled in the official IEEE Overleaf template: 6 content pages,

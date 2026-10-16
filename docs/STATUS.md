@@ -6,12 +6,14 @@ Last updated: 16 October 2026, by Sai.
 
 | Report section | Marks | Owner | Status |
 |---|---|---|---|
-| 1. Motivation and impact | 10 | *TBC* | Not started |
+| Title, abstract, introduction | (in 1) | *to agree* | Not started |
+| 1. Motivation and impact | 10 | *to agree* | Not started |
 | 2. Approach to reproduction | 10 | Sai | Draft done (about 0.75 page) |
 | 3. Lessons learned | 30 | Sai | Draft done (about 2 pages); all experiments finished |
-| 4. Improvements | 30 | *Section 4 owner* | Candidate list below |
-| 5. GitHub repo + README | 20 | Shared | Commands, results table vs paper and deviations up to date |
-| Work plan page | – | *TBC* | Not started |
+| 4. Improvements (+ short conclusion) | 30 | Andrew and Abel | Not started; plan in [SECTION4_GUIDE.md](SECTION4_GUIDE.md) |
+| 5. GitHub repo + README | 20 | Sai; each member adds their own commands | Reproduction commands, results table vs paper and deviations done |
+| Work plan page | required | *to agree*; everyone contributes | Not started |
+| References, AI declaration | – | everyone | Sai's references ready |
 
 Page budget agreed: Sections 2 + 3 take about 2.75 of the 6 content pages; references are separate.
 
@@ -37,11 +39,11 @@ Page budget agreed: Sections 2 + 3 take about 2.75 of the 6 content pages; refer
 
 ## What's next
 
-1. Section 1 and the work-plan page (owners TBC).
-2. Section 4 (see candidates below). Reuse the cached embeddings; don't re-extract.
+1. Agree owners for the title/abstract/introduction, Section 1 and the work-plan page.
+2. Section 4 (see candidates below). Build the embedding cache once (guide, step 3.4), then reuse it.
 3. Merge references from all sections; make the repo public before submission.
 
-## Section 4 candidates (owner: Section 4)
+## Section 4 candidates (Andrew and Abel; full plan in SECTION4_GUIDE.md)
 
 All work on Mantis-8M with no pretraining. `02_zero_shot.py --layer/--token` already supports items 1 and 2, and `ece_rf` in `results/zero_shot.csv` is logged for item 6.
 

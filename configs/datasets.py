@@ -140,10 +140,21 @@ def tier2() -> list[str]:
     return sorted(set(ucr128()) - set(FT_EXCLUDED_UCR) - set(TIER1))
 
 
+# Datasets whose raw series have unequal lengths (results/dataset_stats_all.csv),
+# minus InsectWingbeat (30k-case raw file, subsampled). Used for the aeon
+# "_eq" sensitivity check: `02_zero_shot.py --datasets unequal --aeon-equal-length`.
+UNEQUAL_LENGTH = [
+    "AllGestureWiimoteX", "AllGestureWiimoteY", "AllGestureWiimoteZ", "GestureMidAirD1",
+    "GestureMidAirD2", "GestureMidAirD3", "GesturePebbleZ1", "GesturePebbleZ2",
+    "MelbournePedestrian", "PickupGestureWiimoteZ", "PLAID", "ShakeGestureWiimoteZ",
+    "CharacterTrajectories", "JapaneseVowels", "SpokenArabicDigits",
+]
+
+
 def resolve(selection: str) -> list[str]:
     """Turn a CLI selection into dataset names.
 
-    Accepts: ucr, uea, others, all, tier1, tier2, or a comma-separated list of names.
+    Accepts: ucr, uea, others, all, tier1, tier2, unequal, or a comma-separated list of names.
     """
     sel = selection.strip().lower()
     if sel == "ucr":
@@ -158,4 +169,6 @@ def resolve(selection: str) -> list[str]:
         return list(TIER1)
     if sel == "tier2":
         return tier2()
+    if sel == "unequal":
+        return list(UNEQUAL_LENGTH)
     return [s.strip() for s in selection.split(",") if s.strip()]

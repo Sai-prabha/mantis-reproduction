@@ -11,6 +11,11 @@ Preprocessing choices (state these in Section 2 of the report):
     (torch F.interpolate, align_corners=False), as v1 states. Unequal-length
     series are resized individually.
   * No extra normalisation: Mantis instance-normalises inside its forward pass.
+
+Sensitivity check (Section 3): setting AEON_EQUAL_LENGTH = True (or
+`02_zero_shot.py --aeon-equal-length`) loads the archive's pre-equalised "_eq"
+files instead, i.e. what aeon 0.11 to 1.2 returned by default. It changes only
+the unequal-length datasets and uses a separate cache.
 """
 import inspect
 import json
@@ -24,6 +29,7 @@ from configs.datasets import INSECT_SUBSAMPLE
 from src.common import CACHE_DIR, DATA_DIR
 
 SEQ_LEN = 512
+AEON_EQUAL_LENGTH = False  # sensitivity check only; see module docstring
 
 
 def _load_raw(name: str, split: str):
@@ -31,7 +37,7 @@ def _load_raw(name: str, split: str):
     kwargs = {"split": split, "extract_path": str(DATA_DIR)}
     params = inspect.signature(load_classification).parameters
     if "load_equal_length" in params:
-        kwargs["load_equal_length"] = False
+        kwargs["load_equal_length"] = AEON_EQUAL_LENGTH
     if "load_no_missing" in params:
         kwargs["load_no_missing"] = False
     X, y = load_classification(name, **kwargs)
@@ -90,7 +96,8 @@ def _stratified_subsample(X, y, n, seed):
 
 def load_dataset(name: str, length: int = SEQ_LEN, use_cache: bool = True) -> dict:
     """Load train/test, preprocess, encode labels. Cached as .npz after the first call."""
-    cache = CACHE_DIR / "data" / f"{name}_len{length}.npz"
+    suffix = "_aeoneq" if AEON_EQUAL_LENGTH else ""
+    cache = CACHE_DIR / "data" / f"{name}_len{length}{suffix}.npz"
     if use_cache and cache.exists():
         with np.load(cache, allow_pickle=False) as z:
             files = set(z.files)

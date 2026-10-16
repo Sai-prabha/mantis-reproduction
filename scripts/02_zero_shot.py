@@ -53,8 +53,17 @@ def main():
     ap.add_argument("--token", default="cls_token", choices=["cls_token", "mean_token", "combined"])
     ap.add_argument("--batch-size", type=int, default=256)
     ap.add_argument("--device", default="auto")
-    ap.add_argument("--out", default=str(RESULTS_DIR / "zero_shot.csv"))
+    ap.add_argument("--out", default=None)
+    ap.add_argument("--aeon-equal-length", action="store_true",
+                    help="sensitivity check: load aeon's pre-equalised '_eq' files for unequal-length "
+                         "datasets (aeon <=1.2 default); writes zero_shot_aeon_eq.csv")
     args = ap.parse_args()
+    if args.aeon_equal_length:
+        import src.data
+        src.data.AEON_EQUAL_LENGTH = True
+    if args.out is None:
+        args.out = str(RESULTS_DIR / ("zero_shot_aeon_eq.csv" if args.aeon_equal_length else "zero_shot.csv"))
+    emb_suffix = "__aeoneq" if args.aeon_equal_length else ""
 
     device = pick_device(args.device)
     info = env_info(device)
@@ -71,7 +80,7 @@ def main():
             if net is None:
                 net = load_mantis(device, layer=args.layer, token=args.token)
             Ztr, Zte, emb_secs, from_cache = cached_embeddings(
-                name, data, device, args.layer, args.token, args.batch_size, net=net)
+                name + emb_suffix, data, device, args.layer, args.token, args.batch_size, net=net)
         except Exception as e:  # noqa: BLE001
             traceback.print_exc()
             if not failures.done(dataset=name, layer=args.layer, token=args.token):

@@ -87,6 +87,32 @@ def zero_shot():
         worst = m.reindex(m["delta"].abs().sort_values(ascending=False).index).head(12)
         to_md(worst[["dataset", "archive", "paper", "ours", "ours_std", "delta", "n_train",
                      "max_len", "n_classes", "unequal_length", "n_missing_values"]], "zs_largest_gaps")
+        # where do the discrepancies come from? (unequal-length and long series are resized
+        # to 512, and v1 does not say how it handled unequal lengths)
+        m["abs_delta"] = m["delta"].abs()
+        m["group"] = np.where(m.unequal_length == 1, "unequal length",
+                              np.where(m.max_len > 1000, "equal, longer than 1000", "equal, up to 1000"))
+        grp = m.groupby("group").agg(datasets=("dataset", "count"), mean_abs_delta=("abs_delta", "mean"),
+                                     over_5pp=("abs_delta", lambda x: int((x > 0.05).sum())),
+                                     within_1pp=("abs_delta", lambda x: float((x <= 0.01).mean())))
+        to_md(grp.reset_index(), "zs_gaps_by_series_type")
+        scatter_by_type(m)
+        summary["zero_shot"]["vs_paper"]["within_1pp"] = float((m.abs_delta <= 0.01).mean())
+        summary["zero_shot"]["vs_paper"]["over_5pp"] = int((m.abs_delta > 0.05).sum())
+
+        # sensitivity check: aeon's pre-equalised "_eq" files for unequal-length datasets
+        eq = read(RESULTS_DIR / "zero_shot_aeon_eq.csv")
+        if eq is not None:
+            eq = eq[(eq.layer == -1) & (eq.token == "cls_token")].groupby("dataset").accuracy.mean()
+            c = m[m.dataset.isin(eq.index)][["dataset", "paper", "ours"]].copy()
+            c["ours_aeon_eq"] = c.dataset.map(eq)
+            c["gap_raw"] = (c.ours - c.paper).abs()
+            c["gap_eq"] = (c.ours_aeon_eq - c.paper).abs()
+            to_md(c.sort_values("gap_raw", ascending=False), "zs_unequal_length_check")
+            summary["zero_shot"]["aeon_eq_check"] = {
+                "n": int(len(c)), "mean_abs_gap_raw": float(c.gap_raw.mean()),
+                "mean_abs_gap_eq": float(c.gap_eq.mean()),
+                "closer_with_eq": int((c.gap_eq < c.gap_raw).sum())}
         scatter(m["paper"], m["ours"], "Zero-shot accuracy (RF200, last layer, CLS)",
                 "paper (v1 Table 3)", "ours", "zs_scatter.png")
     return ours
@@ -158,15 +184,43 @@ def finetune():
 
         tgt = read(TARGETS / "v1_table4_finetune.csv")
         if tgt is not None and tgt["mantis"].notna().any():
-            # both tiers: tier 1 averaged over 3 seeds, tier 2 is seed 0 only
-            ours_ft = final_all[final_all.regime == "full"].groupby(["dataset", "tier"]).acc_last \
-                .agg(["mean", "std"]).reset_index()
+            # v1 Table 4 reports BEST-epoch accuracy, so compare like with like and
+            # also show our last-epoch and validation-selected numbers.
+            # Both tiers: tier 1 averaged over 3 seeds, tier 2 is seed 0 only.
+            cols = ["acc_oracle_best_test", "acc_val_selected", "acc_last"]
+            ours_ft = final_all[final_all.regime == "full"].groupby(["dataset", "tier"])[cols] \
+                .mean().reset_index()
             m = ours_ft.merge(tgt[["dataset", "mantis"]], on="dataset").dropna()
-            m["delta"] = m["mean"] - m["mantis"]
-            summary["finetune_vs_paper"] = paired_test(m["mean"], m["mantis"])
-            to_md(m.rename(columns={"mean": "ours", "std": "ours_std", "mantis": "paper"}), "ft_full_vs_paper")
-            scatter(m["mantis"], m["mean"], "Full fine-tuning accuracy", "paper (v1 Table 4)", "ours",
-                    "ft_scatter.png")
+            summary["finetune_vs_paper"] = {c: paired_test(m[c], m["mantis"]) for c in cols}
+            rows = [{"set": lab, "datasets": len(g), "paper (best epoch)": g.mantis.mean(),
+                     **{f"ours {c}": g[c].mean() for c in cols}}
+                    for lab, g in [("tier 1", m[m.tier == 1]), ("tier 2", m[m.tier == 2]), ("both", m)]]
+            to_md(pd.DataFrame(rows), "ft_full_vs_paper")
+            to_md(m.rename(columns={"mantis": "paper"}), "ft_full_vs_paper_per_dataset")
+            scatter(m["mantis"], m["acc_oracle_best_test"], "Full fine-tuning, best epoch",
+                    "paper (v1 Table 4)", "ours", "ft_scatter.png")
+
+        # regimes against v1 Tables 6/7 on the SAME tier-1 datasets
+        t6, t7 = read(TARGETS / "v1_table6_regimes_last.csv"), read(TARGETS / "v1_table7_regimes_best.csv")
+        if t6 is not None and t7 is not None:
+            rows = []
+            for r in [x for x in ["rf", "head", "scratch", "full"] if x in regimes]:
+                last = wide["acc_last"][r].rename("ours_last").reset_index()
+                best = wide["acc_oracle_best_test"][r].rename("ours_best").reset_index()
+                g = last.merge(best, on="dataset").merge(t6[["dataset", r]].rename(columns={r: "paper_last"}),
+                                                         on="dataset").merge(
+                    t7[["dataset", r]].rename(columns={r: "paper_best"}), on="dataset")
+                rows.append({"regime": r, "datasets": len(g), "paper_last": g.paper_last.mean(),
+                             "ours_last": g.ours_last.mean(), "paper_best": g.paper_best.mean(),
+                             "ours_best": g.ours_best.mean() if r != "rf" else np.nan})
+            reg = pd.DataFrame(rows)
+            to_md(reg, "ft_regimes_vs_paper")
+            pr = reg.set_index("regime")
+            if {"full", "scratch"} <= set(pr.index):
+                summary["full_minus_scratch"]["paper_same_datasets_last"] = float(
+                    pr.loc["full", "paper_last"] - pr.loc["scratch", "paper_last"])
+                summary["full_minus_scratch"]["paper_same_datasets_best"] = float(
+                    pr.loc["full", "paper_best"] - pr.loc["scratch", "paper_best"])
 
     # calibration
     cal = final.groupby("regime")[["ece_raw", "ece_ts", "ece_irm", "nll_raw", "nll_ts", "temperature"]].mean()
@@ -233,6 +287,45 @@ def scatter(x, y, title, xl, yl, fname):
     plt.close(fig)
 
 
+
+def scatter_by_type(m: pd.DataFrame, n_labels: int = 5):
+    """Report figure: paper vs ours zero-shot accuracy, marked by series type."""
+    import matplotlib.pyplot as plt
+    FIGS.mkdir(parents=True, exist_ok=True)
+    plt.rcParams.update({"font.size": 7, "axes.linewidth": 0.6})
+    fig, ax = plt.subplots(figsize=(3.4, 2.9))
+    ax.plot([0, 1], [0, 1], lw=0.8, color="#55554f", zorder=1)
+    for off in (-0.05, 0.05):
+        ax.plot([0, 1], [off, 1 + off], lw=0.6, ls=(0, (3, 3)), color="#a3a29a", zorder=1)
+    styles = [("equal, up to 1000", "#2a78d6", "o", 14), ("equal, longer than 1000", "#eb6834", "s", 18),
+              ("unequal length", "#1baf7a", "^", 22)]
+    for grp, col, mk, size in styles:
+        g = m[m.group == grp]
+        ax.scatter(g.paper, g.ours, s=size, marker=mk, color=col, edgecolor="white", linewidth=0.5,
+                   label=f"{grp} ({len(g)})", zorder=3)
+    # label the largest gaps in the empty corners, with thin leader lines
+    slots = {True: [(0.62, 0.50), (0.62, 0.43), (0.62, 0.36)],     # below the diagonal
+             False: [(0.20, 0.97), (0.20, 0.90), (0.20, 0.83)]}    # above the diagonal
+    top = m.sort_values("abs_delta", ascending=False).head(n_labels)
+    groups = {False: top[top.delta >= 0].sort_values("ours", ascending=False),   # above: by height
+              True: top[top.delta < 0].sort_values("paper")}                      # below: left to right
+    for below, rows in groups.items():
+        for (_, r), xy in zip(rows.iterrows(), slots[below]):  # leader lines never cross
+            ax.annotate(r.dataset, (r.paper, r.ours), xytext=xy, textcoords="data", fontsize=6,
+                        color="#3d3d3a", va="center",
+                        arrowprops=dict(arrowstyle="-", lw=0.4, color="#8a8980", shrinkA=1, shrinkB=2))
+    ax.set(xlim=(0.15, 1.02), ylim=(0.15, 1.02), xlabel="v1 Table 3 (paper)", ylabel="ours (3 seeds)")
+    ax.grid(color="#e6e5e0", lw=0.5)
+    ax.set_axisbelow(True)
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    ax.legend(frameon=False, loc="lower right", handletextpad=0.2, borderaxespad=0.2, bbox_to_anchor=(1.0, 0.0))
+    fig.tight_layout(pad=0.3)
+    fig.savefig(FIGS / "zs_scatter_by_type.pdf")
+    fig.savefig(FIGS / "zs_scatter_by_type.png", dpi=300)
+    plt.close(fig)
+
+
 def reliability(final, n_plots=3, n_bins=10):
     """Reliability diagrams (raw vs temperature-scaled) for the full regime, seed 0,
     on the tier-1 datasets with the largest test sets."""
@@ -271,6 +364,12 @@ def reliability(final, n_plots=3, n_bins=10):
 README_START, README_END = "<!-- RESULTS-TABLE:START -->", "<!-- RESULTS-TABLE:END -->"
 
 
+def pfmt(p):
+    if p is None or (isinstance(p, float) and np.isnan(p)):
+        return ""
+    return "<0.001" if p < 0.001 else f"{p:.3f}"
+
+
 def fmt(x, pct=False):
     if x is None or (isinstance(x, float) and np.isnan(x)):
         return "pending"
@@ -286,7 +385,7 @@ def headline():
     if zs is not None:
         zs = zs[(zs.layer == -1) & (zs.token == "cls_token")]
         ours = zs.groupby(["dataset", "archive"]).accuracy.mean().reset_index()
-    for arch, label in [("ucr", "Zero-shot, UCR"), ("uea", "Zero-shot, UEA"), ("other", "Zero-shot, other 4")]:
+    for arch, label in [("ucr", "Zero-shot, UCR"), ("uea", "Zero-shot, UEA"), ("other", "Zero-shot, other (3 of 4)")]:
         paper = mine = p = None
         n = 0
         if zs is not None:
@@ -300,7 +399,7 @@ def headline():
                 p = paired_test(m.accuracy, m.mantis).get("wilcoxon_p")
         rows.append({"Setting": f"{label} (RF200, last layer, CLS)", "Datasets": n, "Paper (v1)": fmt(paper),
                      "Ours": fmt(mine), "Δ": fmt(None if paper is None else mine - paper, pct=True),
-                     "Wilcoxon p": "" if p is None else f"{p:.3f}"})
+                     "Wilcoxon p": pfmt(p)})
     if zs is not None:
         u = ours[ours.archive == "ucr"]
         rows.append({"Setting": "Zero-shot, UCR-128 cross-check (arXiv 2602.17868)", "Datasets": len(u),
@@ -315,23 +414,25 @@ def headline():
         full_all = final[final.regime == "full"]
         for label, sub in [("Full fine-tuning, tier 1 (3 seeds)", full_all[full_all.dataset.isin(TIER1)]),
                            ("Full fine-tuning, tiers 1+2 (seed 0)", full_all[full_all.seed == 0])]:
-            full = sub.groupby("dataset").acc_last.mean().reset_index()
-            paper, mine, p = None, (full.acc_last.mean() if len(full) else None), None
-            n = len(full)
-            if t4 is not None and t4["mantis"].notna().any() and len(full):
-                m = full.merge(t4[["dataset", "mantis"]], on="dataset").dropna()
-                n = len(m)
-                if n:
-                    paper, mine = m.mantis.mean(), m.acc_last.mean()
-                    p = paired_test(m.acc_last, m.mantis).get("wilcoxon_p")
-            rows.append({"Setting": label, "Datasets": n, "Paper (v1)": fmt(paper),
-                         "Ours": fmt(mine), "Δ": fmt(None if paper is None else mine - paper, pct=True),
-                         "Wilcoxon p": "" if p is None else f"{p:.3f}"})
+            for col, how in [("acc_oracle_best_test", "best epoch"), ("acc_last", "ours at last epoch")]:
+                full = sub.groupby("dataset")[col].mean().reset_index()
+                paper, mine, p = None, (full[col].mean() if len(full) else None), None
+                n = len(full)
+                if t4 is not None and t4["mantis"].notna().any() and len(full):
+                    m = full.merge(t4[["dataset", "mantis"]], on="dataset").dropna()
+                    n = len(m)
+                    if n:
+                        paper, mine = m.mantis.mean(), m[col].mean()
+                        p = paired_test(m[col], m.mantis).get("wilcoxon_p")
+                rows.append({"Setting": f"{label}, {how}", "Datasets": n, "Paper (v1)": fmt(paper),
+                             "Ours": fmt(mine), "Δ": fmt(None if paper is None else mine - paper, pct=True),
+                             "Wilcoxon p": pfmt(p)})
         g = summary.get("full_minus_scratch", {})
         for key, pkey, label in [("ours_last", "paper_last", "last epoch"),
                                  ("ours_best_oracle", "paper_best", "best epoch")]:
             rows.append({"Setting": f"Full minus scratch, {label}", "Datasets": g.get("test_last", {}).get("n", 0),
-                         "Paper (v1)": fmt(PAPER_FULL_MINUS_SCRATCH[label.split()[0]], pct=True),
+                         "Paper (v1)": fmt(g.get("paper_same_datasets_" + label.split()[0],
+                                                 PAPER_FULL_MINUS_SCRATCH[label.split()[0]]), pct=True),
                          "Ours": fmt(g.get(key), pct=True), "Δ": "", "Wilcoxon p": ""})
     mm = summary.get("baselines", {}).get("mantis_minus_moment")
     mo = summary.get("baselines", {}).get("MOMENT-1-large")

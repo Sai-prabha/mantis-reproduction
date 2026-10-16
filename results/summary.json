@@ -3,7 +3,24 @@
     "ucr_mean_ours": 0.7925005920357954,
     "ucr_n": 128,
     "ucr_cross_check_2602.17868": 0.7921,
-    "seed_std_median": 0.006553667610299142
+    "seed_std_median": 0.006553667610299142,
+    "vs_paper": {
+      "n": 158,
+      "mean_diff": 0.0008495535354891703,
+      "wins": 73,
+      "ties": 9,
+      "losses": 76,
+      "wilcoxon_p": 0.43437409572906505,
+      "share_within_2std": 0.8670886075949367,
+      "within_1pp": 0.8227848101265823,
+      "over_5pp": 9
+    },
+    "aeon_eq_check": {
+      "n": 15,
+      "mean_abs_gap_raw": 0.04330054312456974,
+      "mean_abs_gap_eq": 0.05276761865477023,
+      "closer_with_eq": 3
+    }
   },
   "baselines": {
     "MiniRocket": {
@@ -23,9 +40,9 @@
       "wilcoxon_p": 0.017729975187867585
     },
     "mantis_minus_moment": {
-      "paper": NaN,
-      "ours": NaN,
-      "n": 0
+      "paper": 0.01539556962025316,
+      "ours": 0.017784200172197007,
+      "n": 158
     }
   },
   "full_vs_zero_shot_by_tier": {
@@ -74,7 +91,9 @@
       "ties": 1,
       "losses": 1,
       "wilcoxon_p": 1.862645149230957e-08
-    }
+    },
+    "paper_same_datasets_last": 0.051376666666666404,
+    "paper_same_datasets_best": 0.03833333333333322
   },
   "best_epoch_effect_full": {
     "last": 0.8444976109346827,
@@ -98,6 +117,32 @@
       "0.001": 8
     },
     "full_pkg_defaults": {}
+  },
+  "finetune_vs_paper": {
+    "acc_oracle_best_test": {
+      "n": 113,
+      "mean_diff": 0.012264004202294843,
+      "wins": 70,
+      "ties": 6,
+      "losses": 37,
+      "wilcoxon_p": 9.174938858258381e-05
+    },
+    "acc_val_selected": {
+      "n": 113,
+      "mean_diff": -0.004611532929768163,
+      "wins": 46,
+      "ties": 6,
+      "losses": 61,
+      "wilcoxon_p": 0.13861499470843008
+    },
+    "acc_last": {
+      "n": 113,
+      "mean_diff": -0.003291177867175723,
+      "wins": 49,
+      "ties": 6,
+      "losses": 58,
+      "wilcoxon_p": 0.28151303482095424
+    }
   },
   "ts_gain_by_val_size": {
     "n_val<=10": -0.008187520669455663,

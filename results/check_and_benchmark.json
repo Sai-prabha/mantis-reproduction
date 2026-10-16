@@ -11,17 +11,18 @@
   },
   "checkpoint_sha": "bc7d5ab40c02133386a28e2c127f35c17c86901d",
   "n_params": 8103936,
+  "n_buffers": 8466,
   "legacy_class_max_abs_diff": 0.0,
   "device_vs_cpu_max_abs_diff": 8.058547973632812e-05,
   "device_vs_cpu_max_rel_diff": 4.596440248860745e-06,
   "same_seed_max_abs_diff": 0.0,
   "embed_series_per_s": {
-    "mps": 5615.581827916807,
-    "cpu": 811.7344780004083
+    "mps": 5641.8004243447085,
+    "cpu": 837.156333626273
   },
   "ft_seconds_per_sample": {
-    "mps": 0.0007564949817625196,
-    "cpu": 0.004025268960930362
+    "mps": 0.0007642339140640312,
+    "cpu": 0.004097071209002934
   },
-  "tier1_estimate_hours": 1.7003233375088314
+  "tier1_estimate_hours": 2.070533282381724
 }

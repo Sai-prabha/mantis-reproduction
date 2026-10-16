@@ -1,7 +1,7 @@
 """Dataset lists used in the reproduction of Mantis v1 (arXiv 2502.15637v1).
 
-Every list here is a deliberate, documented choice. Where the paper is silent,
-the comment says so.
+Where the paper does not say how a list was chosen, the comment next to it
+says what we did instead.
 """
 
 # ---------------------------------------------------------------------------
@@ -94,42 +94,42 @@ FT_EXCLUDED_UCR = [
 
 # Tier 1: 30 UCR datasets, all inside the paper's fine-tuning set (none are in
 # FT_EXCLUDED_UCR). Chosen to spread across training-set size, series length,
-# number of classes and data quirks. The approximate characteristics in the
-# comments are from memory; scripts/00_dataset_stats.py prints the real ones.
+# number of classes, and to include missing values and unequal lengths.
+# Train size, length and class counts below are from results/dataset_stats_all.csv.
 TIER1 = [
-    # very small training sets (<= 40 cases): where pretraining should matter most
+    # at most 40 training cases, where pretraining should help most
     "BeetleFly",            # 20 train, len 512, 2 classes
-    "Chinatown",            # 20 train, len 24 (very short)
+    "Chinatown",            # 20 train, len 24
     "TwoLeadECG",           # 23 train, len 82
-    "DiatomSizeReduction",  # 16 train, 4 classes
-    "Coffee",               # 28 train, spectrographs
-    "Beef",                 # 30 train, 5 classes
-    "CBF",                  # 30 train, synthetic
-    "Rock",                 # 20 train, len 2844 (heavily downsampled to 512)
-    "HouseTwenty",          # 40 train, len 2000 (downsampled)
-    "CinCECGTorso",         # 40 train, len 1639 (downsampled)
-    # small (41-200)
-    "GunPoint",             # 50 train
-    "Herring",              # 64 train
-    "ItalyPowerDemand",     # 67 train, len 24 (very short)
-    "Lightning7",           # 70 train, 7 classes
-    "DodgerLoopDay",        # 78 train, MISSING VALUES
-    "ECG200",               # 100 train
-    "GesturePebbleZ1",      # 132 train, UNEQUAL LENGTH
+    "DiatomSizeReduction",  # 16 train, len 345, 4 classes
+    "Coffee",               # 28 train, len 286, spectrographs
+    "Beef",                 # 30 train, len 470, 5 classes
+    "CBF",                  # 30 train, len 128, synthetic
+    "Rock",                 # 20 train, len 2844, resized down to 512
+    "HouseTwenty",          # 40 train, len 2000, resized down to 512
+    "CinCECGTorso",         # 40 train, len 1639, resized down to 512
+    # 41 to 200 training cases
+    "GunPoint",             # 50 train, len 150
+    "Herring",              # 64 train, len 512
+    "ItalyPowerDemand",     # 67 train, len 24
+    "Lightning7",           # 70 train, len 319, 7 classes
+    "DodgerLoopDay",        # 78 train, len 288, has missing values
+    "ECG200",               # 100 train, len 96
+    "GesturePebbleZ1",      # 132 train, len 100 to 455 (unequal)
     "Worms",                # 181 train, len 900
-    # medium (201-1000)
-    "Phoneme",              # 214 train, 39 classes, len 1024
+    # 201 to 1000 training cases
+    "Phoneme",              # 214 train, len 1024, 39 classes
     "Computers",            # 250 train, len 720
-    "AllGestureWiimoteX",   # 300 train, UNEQUAL LENGTH, 10 classes
-    "Earthquakes",          # 322 train, imbalanced
-    "MedicalImages",        # 381 train, 10 classes
-    "Adiac",                # 390 train, 37 classes
-    "FiftyWords",           # 450 train, 50 classes
-    "SwedishLeaf",          # 500 train, 15 classes
-    "Strawberry",           # 613 train, spectrographs
-    "Wafer",                # 1000 train, large test set
-    # large (> 1000)
-    "MelbournePedestrian",  # 1194 train, len 24, MISSING VALUES
+    "AllGestureWiimoteX",   # 300 train, len 2 to 385 (unequal), 10 classes
+    "Earthquakes",          # 322 train, len 512, imbalanced
+    "MedicalImages",        # 381 train, len 99, 10 classes
+    "Adiac",                # 390 train, len 176, 37 classes
+    "FiftyWords",           # 450 train, len 270, 50 classes
+    "SwedishLeaf",          # 500 train, len 128, 15 classes
+    "Strawberry",           # 613 train, len 235, spectrographs
+    "Wafer",                # 1000 train, len 152, 6164 test cases
+    # over 1000 training cases
+    "MelbournePedestrian",  # 1194 train, len 9 to 24 (unequal), has missing values
     "FordA",                # 3601 train, len 500
 ]
 assert len(TIER1) == 30 and not set(TIER1) & set(FT_EXCLUDED_UCR)

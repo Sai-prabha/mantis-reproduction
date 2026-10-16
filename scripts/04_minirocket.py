@@ -1,8 +1,8 @@
 """Non-foundation-model baseline: MiniRocket (aeon), on the same preprocessed
 input as Mantis (missing values interpolated, every series resized to 512).
 
-Using the identical input removes preprocessing as a confounder; note in the
-report that published MiniRocket numbers use native lengths.
+Both models see identical input, so preprocessing cannot explain differences
+between them. Published MiniRocket results use the original series lengths.
 
 Usage
   python scripts/04_minirocket.py --datasets ucr

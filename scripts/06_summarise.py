@@ -5,7 +5,7 @@ machine-readable results/summary.json. Every number in Sections 3 and 5 (README
 results table) should come from here, never typed by hand.
 
 Paper targets are read from targets/*.csv (transcribed from v1's appendix; see
-targets/README.md). Missing target files are skipped, not faked.
+targets/README.md). Missing target files are skipped.
 
 Usage
   python scripts/06_summarise.py
@@ -28,6 +28,7 @@ TABLES, FIGS = RESULTS_DIR / "tables", RESULTS_DIR / "figures"
 TARGETS = ROOT / "targets"
 CROSS_CHECK_UCR128 = 0.7921  # original Mantis, RF, UCR-128 (arXiv 2602.17868, Fig. 9b / Table 1)
 PAPER_FULL_MINUS_SCRATCH = {"last": 0.0508, "best": 0.0392}  # v1, Figure 7 (151 datasets)
+PAPER_ECE_MANTIS = {"raw": 0.1131, "ts": 0.0673, "irm": 0.0609}  # v1, Figure 9 (131 datasets)
 summary: dict = {}
 
 
@@ -87,8 +88,8 @@ def zero_shot():
         worst = m.reindex(m["delta"].abs().sort_values(ascending=False).index).head(12)
         to_md(worst[["dataset", "archive", "paper", "ours", "ours_std", "delta", "n_train",
                      "max_len", "n_classes", "unequal_length", "n_missing_values"]], "zs_largest_gaps")
-        # where do the discrepancies come from? (unequal-length and long series are resized
-        # to 512, and v1 does not say how it handled unequal lengths)
+        # break the gaps down by series type (unequal-length and long series are
+        # resized to 512, and v1 does not say how it handled unequal lengths)
         m["abs_delta"] = m["delta"].abs()
         m["group"] = np.where(m.unequal_length == 1, "unequal length",
                               np.where(m.max_len > 1000, "equal, longer than 1000", "equal, up to 1000"))
@@ -184,7 +185,7 @@ def finetune():
 
         tgt = read(TARGETS / "v1_table4_finetune.csv")
         if tgt is not None and tgt["mantis"].notna().any():
-            # v1 Table 4 reports BEST-epoch accuracy, so compare like with like and
+            # v1 Table 4 reports best-epoch accuracy, so compare like with like and
             # also show our last-epoch and validation-selected numbers.
             # Both tiers: tier 1 averaged over 3 seeds, tier 2 is seed 0 only.
             cols = ["acc_oracle_best_test", "acc_val_selected", "acc_last"]
@@ -200,7 +201,7 @@ def finetune():
             scatter(m["mantis"], m["acc_oracle_best_test"], "Full fine-tuning, best epoch",
                     "paper (v1 Table 4)", "ours", "ft_scatter.png")
 
-        # regimes against v1 Tables 6/7 on the SAME tier-1 datasets
+        # regimes against v1 Tables 6 and 7 on the same tier-1 datasets
         t6, t7 = read(TARGETS / "v1_table6_regimes_last.csv"), read(TARGETS / "v1_table7_regimes_best.csv")
         if t6 is not None and t7 is not None:
             rows = []
@@ -359,6 +360,102 @@ def reliability(final, n_plots=3, n_bins=10):
     plt.close(fig)
 
 
+# ------------------------------------------------------- report numbers --
+
+def report_numbers():
+    """Every number quoted in Sections 2 and 3 that is not already in another table.
+    Written to results/tables/report_numbers.md and summary.json["report_numbers"]."""
+    from configs.datasets import TIER1
+    zs = read(RESULTS_DIR / "zero_shot.csv")
+    ft = read(RESULTS_DIR / "finetune.csv")
+    mr = read(RESULTS_DIR / "minirocket.csv")
+    mo = read(RESULTS_DIR / "moment.csv")
+    t3, t8 = read(TARGETS / "v1_table3_zeroshot.csv"), read(TARGETS / "v1_table8_uea.csv")
+    stats = read(RESULTS_DIR / "dataset_stats_all.csv")
+    if zs is None or ft is None:
+        return
+    zs = zs[(zs.layer == -1) & (zs.token == "cls_token")]
+    mantis = zs.groupby("dataset").accuracy.mean()
+    arch = zs.drop_duplicates("dataset").set_index("dataset").archive
+    rows = []
+
+    def add(section, statement, value):
+        rows.append({"section": section, "statement": statement, "value": value})
+
+    final = ft[ft.is_final == 1]
+    full0 = final[(final.regime == "full") & (final.seed == 0)].set_index("dataset")
+
+    if mo is not None and t3 is not None:
+        moment = mo.groupby("dataset").accuracy.mean()
+        m = t3.set_index("dataset")[["moment"]].join(moment.rename("ours"), how="inner").dropna()
+        t = paired_test(m.ours, m.moment)
+        add("III-B", "MOMENT zero-shot, ours vs v1 Table 3",
+            f"{m.ours.mean():.4f} vs {m.moment.mean():.4f} (n={len(m)}, p={t.get('wilcoxon_p', np.nan):.2f})")
+        u = [d for d in moment.index if arch.get(d) == "ucr" and d in mantis.index]
+        t = paired_test(mantis[u], moment[u])
+        add("III-B", "Mantis minus MOMENT on UCR only",
+            f"{100 * t['mean_diff']:+.2f} pp (n={t['n']}, p={t.get('wilcoxon_p', np.nan):.3f})")
+        secs_mo = mo.drop_duplicates("dataset").embed_seconds.sum()
+        secs_ma = zs.drop_duplicates("dataset").embed_seconds.sum()
+        add("III-B", "Embedding time, Mantis vs MOMENT (all datasets)",
+            f"{secs_ma / 60:.1f} min vs {secs_mo / 3600:.1f} h ({secs_mo / secs_ma:.0f} times faster)")
+    if mr is not None:
+        minirocket = mr.groupby("dataset").accuracy.mean()
+        c = pd.concat([mantis.rename("mantis"), minirocket.rename("mr")], axis=1).dropna()
+        add("III-B", "MiniRocket vs zero-shot Mantis",
+            f"{c.mr.mean():.4f} vs {c.mantis.mean():.4f} (n={len(c)})")
+        add("III-B", "MiniRocket total run time, all datasets and seeds", f"{mr.seconds.sum() / 60:.0f} min")
+        f = pd.concat([full0.acc_last.rename("ft"), minirocket.rename("mr")], axis=1).dropna()
+        t = paired_test(f.ft, f.mr)
+        add("III-B", "Fine-tuned Mantis (Full, last epoch, seed 0) vs MiniRocket",
+            f"{f.ft.mean():.4f} vs {f.mr.mean():.4f} (n={t['n']}; MiniRocket better on {t['losses']}, "
+            f"Mantis on {t['wins']}, p={t.get('wilcoxon_p', np.nan):.4f})")
+        if "EthanolLevel" in c.index:
+            add("III-B", "EthanolLevel, MiniRocket vs Mantis zero-shot",
+                f"{c.loc['EthanolLevel', 'mr']:.2f} vs {c.loc['EthanolLevel', 'mantis']:.2f}")
+    if t8 is not None:
+        u = mantis[[d for d in t8.dataset if d in mantis.index]]
+        g = t8.set_index("dataset").rf.reindex(u.index)
+        g3 = t3.set_index("dataset").mantis.reindex(u.index) if t3 is not None else g
+        add("III-A", "UEA: mean |ours - v1 Table 3| vs mean |ours - v1 Table 8|",
+            f"{100 * (u - g3).abs().mean():.1f} pp vs {100 * (u - g).abs().mean():.1f} pp "
+            f"(Table 8 mean {g.mean():.4f}, Table 3 mean {g3.mean():.4f})")
+    eq = read(RESULTS_DIR / "zero_shot_aeon_eq.csv")
+    if eq is not None:
+        e = eq[(eq.layer == -1) & (eq.token == "cls_token")].groupby("dataset").accuracy.mean()
+        ch = (e - mantis.reindex(e.index)).abs()
+        add("III-A", "Accuracy change from loading aeon's _eq files (15 datasets)",
+            f"mean {100 * ch.mean():.1f} pp, max {100 * ch.max():.1f} pp ({ch.idxmax()})")
+
+    t1 = final[final.dataset.isin(TIER1)]
+    w = t1.groupby(["dataset", "regime"]).acc_last.mean().unstack()
+    if {"full", "scratch"} <= set(w.columns) and stats is not None:
+        gap = (w.full - w.scratch)
+        ntr = stats.set_index("name").n_train.reindex(gap.index)
+        add("III-D", "Full minus Scratch (last epoch), at most 40 training cases vs the rest",
+            f"{100 * gap[ntr <= 40].mean():+.1f} pp (n={int((ntr <= 40).sum())}) vs "
+            f"{100 * gap[ntr > 40].mean():+.1f} pp (n={int((ntr > 40).sum())}); "
+            f"largest {100 * gap.max():+.1f} pp ({gap.idxmax()})")
+    pk = final[final.regime == "full_pkg_defaults"].set_index("dataset")
+    if len(pk):
+        base = t1[t1.regime == "full"].groupby("dataset")[["acc_last", "fit_seconds"]].mean().reindex(pk.index)
+        add("III-C", "Package defaults minus paper protocol (Full, last epoch)",
+            f"{100 * (pk.acc_last - base.acc_last).mean():+.1f} pp on {len(pk)} datasets, "
+            f"{(pk.fit_seconds / base.fit_seconds).mean():.1f} times the run time")
+    c = full0[["ece_raw", "ece_ts", "ece_irm", "temperature"]]
+    add("III-E", "ECE raw / TS / IRM, Full, seed 0, both tiers (v1 Figure 9)",
+        f"{c.ece_raw.mean():.3f} / {c.ece_ts.mean():.3f} / {c.ece_irm.mean():.3f} (n={len(c)}) vs v1 "
+        f"{PAPER_ECE_MANTIS['raw']:.3f} / {PAPER_ECE_MANTIS['ts']:.3f} / {PAPER_ECE_MANTIS['irm']:.3f}")
+    add("III-E", "Fitted temperature above 1, and TS raising ECE",
+        f"T > 1 on {int((c.temperature > 1).sum())} of {len(c)} (mean {c.temperature.mean():.2f}); "
+        f"TS worse on {int((c.ece_ts > c.ece_raw).sum())}")
+    add("II-F", "Fine-tuning run time (all runs)", f"{len(ft)} runs, {ft.fit_seconds.sum() / 3600:.1f} h")
+
+    df = pd.DataFrame(rows)
+    to_md(df, "report_numbers")
+    summary["report_numbers"] = {f"{r.section} {r.statement}": r.value for r in df.itertuples()}
+
+
 # ------------------------------------------------------- headline table --
 
 README_START, README_END = "<!-- RESULTS-TABLE:START -->", "<!-- RESULTS-TABLE:END -->"
@@ -378,7 +475,7 @@ def fmt(x, pct=False):
 
 def headline():
     """Paper-vs-ours table for the README (Section 5 requirement). Means are
-    taken over the datasets present in BOTH our results and the paper's table."""
+    taken over the datasets present in both our results and the paper's table."""
     rows = []
     zs = read(RESULTS_DIR / "zero_shot.csv")
     t3 = read(TARGETS / "v1_table3_zeroshot.csv")
@@ -412,9 +509,12 @@ def headline():
     if ft is not None:
         final = ft[ft.is_final == 1]
         full_all = final[final.regime == "full"]
+        # tier 1 is averaged over its 3 seeds, tier 2 has seed 0 only (same as ft_full_vs_paper)
         for label, sub in [("Full fine-tuning, tier 1 (3 seeds)", full_all[full_all.dataset.isin(TIER1)]),
-                           ("Full fine-tuning, tiers 1+2 (seed 0)", full_all[full_all.seed == 0])]:
-            for col, how in [("acc_oracle_best_test", "best epoch"), ("acc_last", "ours at last epoch")]:
+                           ("Full fine-tuning, tiers 1 and 2", full_all)]:
+            for col, how in [("acc_oracle_best_test", "best epoch (ours chosen on test)"),
+                             ("acc_val_selected", "best epoch (ours chosen on validation)"),
+                             ("acc_last", "ours at last epoch")]:
                 full = sub.groupby("dataset")[col].mean().reset_index()
                 paper, mine, p = None, (full[col].mean() if len(full) else None), None
                 n = len(full)
@@ -434,6 +534,23 @@ def headline():
                          "Paper (v1)": fmt(g.get("paper_same_datasets_" + label.split()[0],
                                                  PAPER_FULL_MINUS_SCRATCH[label.split()[0]]), pct=True),
                          "Ours": fmt(g.get(key), pct=True), "Δ": "", "Wilcoxon p": ""})
+        # calibration of Full fine-tuning (seed 0, both tiers) against v1 Figure 9
+        f0 = full_all[full_all.seed == 0]
+        for key, col, label in [("raw", "ece_raw", "no post-hoc calibration"),
+                                ("ts", "ece_ts", "temperature scaling"), ("irm", "ece_irm", "IRM")]:
+            if col in f0 and len(f0):
+                mine = f0[col].mean()
+                rows.append({"Setting": f"ECE, Full fine-tuning (seed 0), {label}", "Datasets": len(f0),
+                             "Paper (v1)": f"{PAPER_ECE_MANTIS[key]:.4f}", "Ours": fmt(mine),
+                             "Δ": fmt(mine - PAPER_ECE_MANTIS[key], pct=True), "Wilcoxon p": ""})
+    mo_csv, t3m = read(RESULTS_DIR / "moment.csv"), read(TARGETS / "v1_table3_zeroshot.csv")
+    if mo_csv is not None and t3m is not None and t3m["moment"].notna().any():
+        m = mo_csv.groupby("dataset").accuracy.mean().rename("ours").reset_index().merge(
+            t3m[["dataset", "moment"]], on="dataset").dropna()
+        rows.append({"Setting": "Zero-shot, MOMENT-1-large (RF200)", "Datasets": len(m),
+                     "Paper (v1)": fmt(m.moment.mean()), "Ours": fmt(m.ours.mean()),
+                     "Δ": fmt(m.ours.mean() - m.moment.mean(), pct=True),
+                     "Wilcoxon p": pfmt(paired_test(m.ours, m.moment).get("wilcoxon_p"))})
     mm = summary.get("baselines", {}).get("mantis_minus_moment")
     mo = summary.get("baselines", {}).get("MOMENT-1-large")
     if mm and mm["n"]:
@@ -464,6 +581,7 @@ def main():
     ours = zero_shot()
     baselines(ours)
     finetune()
+    report_numbers()
     headline()
     RESULTS_DIR.mkdir(exist_ok=True)
     (RESULTS_DIR / "summary.json").write_text(json.dumps(summary, indent=2, default=float))

@@ -57,7 +57,7 @@ def set_seed(seed: int) -> None:
 
 
 def sync(device: str) -> None:
-    """Wait for queued GPU work, so timings are honest."""
+    """Wait for queued GPU work so that it is included in the timing."""
     if device == "mps":
         torch.mps.synchronize()
     elif device == "cuda":

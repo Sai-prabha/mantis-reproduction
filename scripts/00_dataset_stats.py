@@ -1,8 +1,8 @@
 """Download, preprocess and describe datasets. Writes results/dataset_stats.csv.
 
-Run this first: it caches every dataset, shows which ones fail to load (for
-example the four "other" datasets), and gives the real train size / length /
-class counts used to justify the tier-1 selection and estimate run time.
+Run this first. It caches every dataset, lists any that fail to load (EMOPain
+does), and records the train size, length and class counts used to choose
+tier 1 and to estimate run time.
 
 Usage
   python scripts/00_dataset_stats.py --datasets tier1

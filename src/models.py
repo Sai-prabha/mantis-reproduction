@@ -12,9 +12,9 @@ def load_mantis(device: str, pretrained: bool = True, layer: int = -1,
                 token: str = "cls_token", seed: int | None = None):
     """v1 protocol defaults: last transformer layer (-1) and the CLS token.
 
-    pretrained=False returns a randomly initialised network. That is the ONLY
-    way to train "from scratch": the package's fine_tuning_type="scratch" does
-    not re-initialise weights, it just trains every parameter (same as "full").
+    pretrained=False returns a randomly initialised network, which is how we train
+    from scratch. The package's fine_tuning_type="scratch" does not re-initialise
+    the weights; it trains every parameter of the pretrained model, the same as "full".
     """
     from mantis.architecture import MantisV1
     if seed is not None:
@@ -60,5 +60,5 @@ def cached_embeddings(name: str, data: dict, device: str, layer: int = -1,
 
 def paper_head(in_dim: int, n_classes: int) -> nn.Module:
     """v1 fine-tuning head: LayerNorm + Linear.
-    (mantis-tsfm 1.1.0's default is BatchNorm1d + Linear, which is NOT the paper's.)"""
+    mantis-tsfm 1.1.0 defaults to BatchNorm1d + Linear, which differs from the paper."""
     return nn.Sequential(nn.LayerNorm(in_dim), nn.Linear(in_dim, n_classes))

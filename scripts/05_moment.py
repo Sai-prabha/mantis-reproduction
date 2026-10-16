@@ -1,20 +1,20 @@
 """Foundation-model baseline: MOMENT-1-large, zero-shot embeddings + RF200.
 
-Tests v1's claim that Mantis beats MOMENT by 1.53% (zero-shot, 159 datasets).
+Tests v1's claim that Mantis beats MOMENT by 1.53 pp (zero-shot, 159 datasets).
 
 momentfm 0.1.4 pins numpy==1.25.2, transformers==4.33.3 and huggingface-hub==0.24.0,
-which clash with the main environment, so this script runs in its OWN venv
-(Python 3.11). It reads the preprocessed data cache written by the main
+which clash with the main environment, so this script runs in its own
+environment (Python 3.11). It reads the preprocessed data cache written by the main
 environment, so run scripts/00_dataset_stats.py --datasets all there first.
 
-Choices to state in the report:
+Choices described in the report:
   * Same preprocessed input as Mantis (length 512, which MOMENT also expects).
   * Channels embedded one at a time and concatenated, like Mantis. MOMENT's
     own "mean" reduction would average over channels instead.
   * Embedding = mean over patches of the final encoder output (momentfm default).
 
-Usage (in the MOMENT venv)
-  python scripts/05_moment.py --datasets ucr
+Usage (from the main environment's shell)
+  conda run --no-capture-output -n mantis-moment python scripts/05_moment.py --datasets ucr
 """
 import argparse
 import os

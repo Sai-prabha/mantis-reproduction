@@ -1,7 +1,7 @@
-"""Environment checks and timing benchmark. Run this FIRST on your machine.
+"""Environment checks and timing benchmark. Run this first on a new machine.
 
-Checks (each is a candidate Section 3 finding):
-  1. Versions, device, and the exact checkpoint commit (pin it afterwards).
+Checks (results are reported in Section 3):
+  1. Versions, device, and the checkpoint commit (pinned in src/common.py).
   2. Parameter count of Mantis-8M (paper: ~8M; Hugging Face: 8.11M).
   3. MantisV1 vs the legacy Mantis8M class: identical embeddings?
   4. MPS vs CPU: how far apart are the embeddings?

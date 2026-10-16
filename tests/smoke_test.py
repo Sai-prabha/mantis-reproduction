@@ -1,6 +1,6 @@
 """Offline smoke test: runs every script end to end on synthetic data with a
-RANDOMLY INITIALISED Mantis (no internet needed). It checks the plumbing only;
-its accuracies mean nothing.
+randomly initialised Mantis, so no internet connection is needed. It only checks
+that the scripts run; the accuracies it prints are meaningless.
 
   python tests/smoke_test.py
 """
@@ -70,4 +70,4 @@ run("03_finetune.py", "--datasets", "Plain", "--epochs", "4", "--eval-every", "2
     "--seeds", "0", "1", "--device", "cpu")  # resume
 run("04_minirocket.py", "--datasets", names, "--seeds", "0")
 run("06_summarise.py")
-print(f"\nSMOKE TEST PASSED. Outputs in {tmp}")
+print(f"\nSmoke test passed. Outputs in {tmp}")

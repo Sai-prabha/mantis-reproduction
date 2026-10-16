@@ -1,10 +1,10 @@
 """Data loading and preprocessing.
 
-Preprocessing choices (state these in Section 2 of the report):
-  * Raw archive data is loaded on purpose (load_equal_length=False,
-    load_no_missing=False). aeon 0.11 to 1.2 default both to True, silently
-    returning the archive's pre-padded / pre-imputed copies; aeon 1.6 defaults
-    to False. Setting them explicitly makes the result version-independent.
+Preprocessing choices (described in Section 2 of the report):
+  * Raw archive data is loaded (load_equal_length=False, load_no_missing=False).
+    aeon 0.11 to 1.2 default both to True and return the archive's pre-padded or
+    pre-imputed copies; aeon 1.6 defaults to False. Setting them explicitly gives
+    the same data whatever the aeon version.
   * Missing values: linear interpolation within each channel, then edge fill.
     v1 does not describe missing-value handling, so this is our assumption.
   * Every series is resized to length 512 with linear interpolation
@@ -14,8 +14,8 @@ Preprocessing choices (state these in Section 2 of the report):
 
 Sensitivity check (Section 3): setting AEON_EQUAL_LENGTH = True (or
 `02_zero_shot.py --aeon-equal-length`) loads the archive's pre-equalised "_eq"
-files instead, i.e. what aeon 0.11 to 1.2 returned by default. It changes only
-the unequal-length datasets and uses a separate cache.
+files instead, which is what aeon 0.11 to 1.2 returned by default. It only
+changes the unequal-length datasets and uses a separate cache.
 """
 import inspect
 import json

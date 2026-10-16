@@ -19,15 +19,15 @@ package defaults:
 Our documented choices where v1 is silent:
   * LR is selected on seed 0 only (best final-epoch validation accuracy,
     ties broken by validation NLL); seeds 1..n reuse the selected LR.
-  * The model is trained on the 80% split and NOT retrained on 100%, because
+  * The model is trained on the 80% split and not retrained on 100%, because
     the 20% split is needed to fit the calibration maps.
   * The 80/20 split changes with the seed (stratified where possible).
-  * "Best epoch" is reported two ways: chosen on validation (legitimate) and
-    chosen on test (oracle, which is what "best epoch" can silently mean).
+  * "Best epoch" is reported two ways: chosen on validation accuracy, and chosen
+    on test accuracy (an oracle, since v1 does not say which it used).
 
 Usage
   python scripts/03_finetune.py --datasets tier1
-  python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr 2e-4
+  python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr 0.001
   python scripts/03_finetune.py --datasets ECG200,GunPoint --package-defaults
 """
 import argparse
@@ -181,7 +181,7 @@ def expand_proba_columns(logp: np.ndarray, classes: np.ndarray, n_classes: int) 
 
 def run_package_defaults(Xtr, ytr, Xva, yva, Xte, yte, seed, device):
     """mantis-tsfm 1.1.0 MantisTrainer.fit with its defaults (500 epochs,
-    BatchNorm+Linear head, lr 2e-4). Shows what an unwary user would get."""
+    BatchNorm+Linear head, lr 2e-4), for comparison with the paper's settings."""
     from mantis.trainer import MantisTrainer
     set_seed(seed)
     trainer = MantisTrainer(device=device, network=load_mantis(device))

@@ -15,12 +15,12 @@
       "wilcoxon_p": 6.734327818578562e-17
     },
     "MOMENT-1-large": {
-      "n": 128,
-      "mean_diff": 0.01574554951642249,
-      "wins": 73,
+      "n": 158,
+      "mean_diff": 0.017784200172197007,
+      "wins": 91,
       "ties": 1,
-      "losses": 54,
-      "wilcoxon_p": 0.05763298386246448
+      "losses": 66,
+      "wilcoxon_p": 0.017729975187867585
     },
     "mantis_minus_moment": {
       "paper": NaN,

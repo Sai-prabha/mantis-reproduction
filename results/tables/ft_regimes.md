@@ -4,4 +4,4 @@
 | head              |         30 |     0.7817 |             0.7779 |                 0.7854 |
 | full              |         30 |     0.8445 |             0.8421 |                 0.8549 |
 | scratch           |         30 |     0.7810 |             0.7774 |                 0.7994 |
-| full_pkg_defaults |          3 |     0.9604 |           nan      |               nan      |
+| full_pkg_defaults |          5 |     0.8964 |           nan      |               nan      |

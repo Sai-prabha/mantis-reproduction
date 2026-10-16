@@ -8,4 +8,4 @@
 | Full fine-tuning, tiers 1+2 (seed 0)              |        113 | pending      | 0.8395   | pending  |              |
 | Full minus scratch, last epoch                    |         30 | +5.08 pp     | +6.35 pp |          |              |
 | Full minus scratch, best epoch                    |         30 | +3.92 pp     | +5.55 pp |          |              |
-| Zero-shot, Mantis minus MOMENT                    |        128 | pending      | +1.57 pp |          |        0.058 |
+| Zero-shot, Mantis minus MOMENT                    |        158 | pending      | +1.78 pp |          |        0.018 |

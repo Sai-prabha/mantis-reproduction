@@ -94,15 +94,17 @@ Run from the repo root with the `mantis` environment active.
 
 | Command | Result |
 |---|---|
+| `python scripts/00_dataset_stats.py --datasets all` | Download and describe all datasets (also converts caches for the MOMENT env) |
 | `python scripts/01_check_and_benchmark.py` | Environment checks, MPS vs CPU, timing |
 | `python scripts/02_zero_shot.py --datasets ucr` | Zero-shot, UCR-128 |
 | `python scripts/02_zero_shot.py --datasets uea` | Zero-shot, UEA-27 |
-| `python scripts/02_zero_shot.py --datasets others` | Zero-shot, 4 extra datasets |
+| `python scripts/02_zero_shot.py --datasets others` | Zero-shot, 4 extra datasets (EMOPain is no longer downloadable) |
+| `python scripts/02_zero_shot.py --datasets unequal --aeon-equal-length` | Sensitivity check: unequal-length datasets loaded from aeon's pre-equalised `_eq` files |
 | `python scripts/04_minirocket.py --datasets all` | MiniRocket baseline |
-| `conda run -n mantis-moment python scripts/05_moment.py --datasets all` | MOMENT baseline |
+| `conda run --no-capture-output -n mantis-moment python scripts/05_moment.py --datasets all` | MOMENT-1-large baseline (about 6.6 h on MPS) |
 | `python scripts/03_finetune.py --datasets tier1` | Fine-tuning: 30 datasets, 4 regimes, calibration |
-| `python scripts/03_finetune.py --datasets ECG200,GunPoint,Wafer --package-defaults --seeds 0` | Package defaults vs paper protocol |
-| `python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr <LR>` | Fine-tuning breadth (tier 2) |
+| `python scripts/03_finetune.py --datasets ECG200,GunPoint,Wafer,Adiac,FiftyWords --package-defaults --seeds 0` | Package defaults vs paper protocol |
+| `python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr 0.001` | Fine-tuning breadth: the other 83 UCR datasets of v1's 131 |
 | `python scripts/06_summarise.py` | All tables, figures and the results table below |
 
 Every script appends to a CSV in `results/` and skips work already recorded,
@@ -135,20 +137,25 @@ tables and figures are in `results/tables/` and `results/figures/`.
 
 | Paper (v1) | Ours | Reason |
 |---|---|---|
-| 1× V100 32 GB | Apple M5 Pro (MPS) | available hardware |
-| Fine-tuning on 131 datasets | 30 (tier 1), plus tier 2 | compute; scope agreed with demonstrator |
-| LR chosen on validation (details unstated) | chosen on seed 0, reused for seeds 1–2 | compute |
+| 1× V100 32 GB | Apple M5 Pro, 48 GB (MPS) | available hardware |
+| 159 zero-shot datasets | 158 (EMOPain no longer in aeon's download index) | data availability |
+| Fine-tuning on 131 datasets | the 113 UCR ones: tier 1 (30, all regimes, 3 seeds) + tier 2 (83, Full, 1 seed) | compute; scope agreed with demonstrator |
+| LR chosen on validation (details unstated) | tier 1: chosen on seed 0, reused for seeds 1–2; tier 2: fixed 1e-3 | compute |
+| Regime study (Tables 6–7): fixed LR 2e-4 | LR selected as above | one protocol for all fine-tuning |
 | Model after LR selection: unstated | trained on 80%, not refit on 100% | 20% split needed for calibration |
+| "Best epoch": selection unstated | evaluated every 5 epochs; reported as validation-selected and test-selected (oracle) | make the ambiguity measurable |
 | Missing values: unstated | linear interpolation | assumption |
-| InsectWingbeat subset: unstated | stratified 1000 train / 1000 test, seed 0 | assumption |
+| Unequal lengths: "resized to 512" | raw series (`load_equal_length=False`), each resized; `_eq` files tested separately | assumption, checked |
+| InsectWingbeat subset: sizes only | stratified 1000 train / 1000 test, seed 0 | assumption |
 | Seeds: 3, values unstated | 0, 1, 2 | |
+| NuTime, GPT4TS, UniTS comparators | not run; MiniRocket added instead | time |
 
 ## Repository layout
 
 ```
-configs/datasets.py     dataset lists (UCR-128, UEA-27, others, tier 1, tier 2)
+configs/datasets.py     dataset lists (UCR-128, UEA-27, others, tier 1, tier 2, unequal)
 src/                    data loading, model helpers, calibration metrics
 scripts/00-06           one script per step above
-targets/                paper numbers transcribed from v1's appendix
+targets/                paper numbers from v1's appendix Tables 3, 4, 6, 7 (see targets/README.md)
 results/                CSV logs, tables, figures (committed)
 ```

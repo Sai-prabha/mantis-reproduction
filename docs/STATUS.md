@@ -1,17 +1,19 @@
 # Project status (for the group)
 
-Last updated: 15 October 2026, by Sai.
+Last updated: 16 October 2026, by Sai.
 
 ## Where things stand
 
 | Report section | Marks | Owner | Status |
 |---|---|---|---|
 | 1. Motivation and impact | 10 | *TBC* | Not started |
-| 2. Approach to reproduction | 10 | Sai | Plan done ([guide](sections_2_3_guide.md)); write-up waits for results |
-| 3. Lessons learned | 30 | Sai | Plan done; experiments ready to run |
-| 4. Improvements | 30 | *Section 4 owner* | Candidate list below; not started |
-| 5. GitHub repo + README | 20 | Shared | Repo, scripts, README skeleton done; results table fills itself |
+| 2. Approach to reproduction | 10 | Sai | Draft done (about 0.75 page) |
+| 3. Lessons learned | 30 | Sai | Draft done (about 2 pages); all experiments finished |
+| 4. Improvements | 30 | *Section 4 owner* | Candidate list below |
+| 5. GitHub repo + README | 20 | Shared | Commands, results table vs paper and deviations up to date |
 | Work plan page | – | *TBC* | Not started |
+
+Page budget agreed: Sections 2 + 3 take about 2.75 of the 6 content pages; references are separate.
 
 ## Agreed decisions
 
@@ -26,23 +28,18 @@ Last updated: 15 October 2026, by Sai.
 ## What's done
 
 - [x] Experiment code: scripts `00` to `06` (see README). Every run logs to `results/*.csv` and resumes after interruption.
-- [x] Offline smoke test passes (`python tests/smoke_test.py`, random weights + synthetic data).
-- [x] Target templates for the paper's appendix tables (`targets/`), with all 159 / 131 dataset names.
-- [x] README with environment, data, commands and an auto-generated paper-vs-ours table.
-- [x] Code-level findings for Section 3 (details in the guide, Section 1):
-  - the package's `fine_tuning_type="scratch"` does not re-initialise weights;
-  - the package's fine-tuning defaults differ from the paper's settings;
-  - aeon's loading defaults changed between versions (raw vs pre-processed data);
-  - removing v1's stated exclusions gives exactly its 131 fine-tuning datasets.
+- [x] Zero-shot on 158 datasets (3 seeds); MiniRocket and MOMENT-1-large baselines on the same 158.
+- [x] Fine-tuning: tier 1 (30 datasets, RF/Head/Full/Scratch, 3 seeds, calibration), tier 2 (83 datasets, Full, 1 seed), package defaults on 5 datasets.
+- [x] v1 appendix Tables 3, 4, 6 and 7 transcribed into `targets/`, checked against every average printed in the paper's figures.
+- [x] Sensitivity check on unequal-length datasets (aeon `_eq` files): ruled out as the cause of the gaps.
+- [x] README results table compares every headline number with the paper.
+- [x] Sections 2 and 3 drafted.
 
 ## What's next
 
-1. ~~Install and run `00_dataset_stats.py`, `01_check_and_benchmark.py` on the M5 Pro; pin the checkpoint hash.~~ Done 15 Oct: 25/30 tier-1 datasets loaded (5 failed on a Zenodo outage, rerun pending); checks passed; tier-1 estimate ~2 h on MPS.
-2. Transcribe v1 Appendix Tables 3 and 4 into `targets/` (spot-check 10 rows).
-3. Zero-shot on all 159; MiniRocket in parallel.
-4. Tier-1 fine-tuning overnight; package-defaults comparison.
-5. MOMENT (separate venv); NuTime attempt.
-6. `06_summarise.py`, then write Sections 2 and 3.
+1. Section 1 and the work-plan page (owners TBC).
+2. Section 4 (see candidates below). Reuse the cached embeddings; don't re-extract.
+3. Merge references from all sections; make the repo public before submission.
 
 ## Section 4 candidates (owner: Section 4)
 

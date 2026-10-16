@@ -10,10 +10,6 @@ authors' code ([vfeofanov/mantis](https://github.com/vfeofanov/mantis),
 > Cite v1 explicitly. The un-versioned arXiv link opens a later version, which
 > describes a different, 4.2M-parameter model.
 
-Group members: start with [`docs/STATUS.md`](docs/STATUS.md) (who is doing what,
-what's done and what's next) and [`docs/SECTION4_GUIDE.md`](docs/SECTION4_GUIDE.md)
-(setting up and running the Section 4 experiments).
-
 ## What is reproduced
 
 | v1 claim | Where in v1 | Script |

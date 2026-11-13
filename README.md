@@ -165,7 +165,7 @@ parameters each. The first block takes 0.39 of a full forward.
 
 | Reproduction | These runs | Reason |
 |---|---|---|
-| 1× V100 32 GB | GeForce RTX 2080 SUPER | available hardware; a one-thread forest reruns |
+| 1× V100 32 GB | GeForce RTX 2080 SUPER, 32 GB RAM | available hardware; a one-thread forest reruns |
 | 158 datasets | 62 | the two limits, plus 12 short controls |
 | Calibration after fine-tuning | Calibration of the frozen forest | the encoder weights stay fixed |
 | One embedding per channel, resized to 512 | Same resize. Extra series are still length 512 | the released tokeniser is built for 512 |

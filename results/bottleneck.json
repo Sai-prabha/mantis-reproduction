@@ -1,0 +1,118 @@
+{
+  "device": "cpu",
+  "notes": [],
+  "params": {
+    "total": 8103936,
+    "n_blocks": 6,
+    "blocks": [
+      {
+        "index": 0,
+        "params": 1312768
+      },
+      {
+        "index": 1,
+        "params": 1312768
+      },
+      {
+        "index": 2,
+        "params": 1312768
+      },
+      {
+        "index": 3,
+        "params": 1312768
+      },
+      {
+        "index": 4,
+        "params": 1312768
+      },
+      {
+        "index": 5,
+        "params": 1312768
+      }
+    ],
+    "params_in_blocks_after_the_third": 3938304
+  },
+  "early_exit": [
+    {
+      "request": "layer -1, model built that way",
+      "seconds": 1.4296942995861173
+    },
+    {
+      "request": "layer 0, attribute set on the full model",
+      "seconds": 0.5579403000883758
+    },
+    {
+      "request": "layer 0, model constructed with that request",
+      "seconds": 0.5180664001964033
+    }
+  ],
+  "early_exit_time_ratio_layer0_over_last": 0.3902514686180774,
+  "scale_n": [
+    {
+      "n": 64,
+      "channels": 1,
+      "seconds": 0.3830850999802351,
+      "series_per_s": 167.06470704107787
+    },
+    {
+      "n": 256,
+      "channels": 1,
+      "seconds": 1.3094251002185047,
+      "series_per_s": 195.50564591841191
+    },
+    {
+      "n": 1024,
+      "channels": 1,
+      "seconds": 5.403363099787384,
+      "series_per_s": 189.5116025129411
+    }
+  ],
+  "scale_channels": [
+    {
+      "n": 128,
+      "channels": 1,
+      "seconds": 0.7123950999230146,
+      "seconds_per_channel": 0.7123950999230146
+    },
+    {
+      "n": 128,
+      "channels": 4,
+      "seconds": 2.8431899999268353,
+      "seconds_per_channel": 0.7107974999817088
+    },
+    {
+      "n": 128,
+      "channels": 16,
+      "seconds": 11.554561000317335,
+      "seconds_per_channel": 0.7221600625198334
+    },
+    {
+      "n": 128,
+      "channels": 32,
+      "seconds": 27.28189740004018,
+      "seconds_per_channel": 0.8525592937512556
+    }
+  ],
+  "resize": [
+    {
+      "n": 128,
+      "raw_length": 64,
+      "seconds": 0.01931800041347742
+    },
+    {
+      "n": 128,
+      "raw_length": 512,
+      "seconds": 0.017138299997895956
+    },
+    {
+      "n": 128,
+      "raw_length": 4096,
+      "seconds": 0.019577300176024437
+    },
+    {
+      "n": 128,
+      "raw_length": 16384,
+      "seconds": 0.0339416996575892
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+| comparison                             | question                                       |   n |   mean_diff_pp |   wins |   ties |   losses |   gain_>1pp |   loss_>1pp | p      | p_holm   |
+|:---------------------------------------|:-----------------------------------------------|----:|---------------:|-------:|-------:|---------:|------------:|------------:|:-------|:---------|
+| Mantis+Stats (ridge) vs Mantis (RF)    | Best Mantis-only setup vs the paper's protocol | 158 |           2.07 |    112 |      7 |       39 |          89 |          22 | <0.001 | <0.001   |
+| Mantis+Stats (ridge) vs Mantis (ridge) | Do statistics still help with a ridge head?    | 158 |           0.19 |     81 |     21 |       56 |          42 |          30 | 0.033  | 0.033    |

@@ -1,0 +1,659 @@
+{
+  "datasets_compared": 158,
+  "datasets_excluded": [],
+  "overview": [
+    {
+      "method": "MiniRocket+Mantis+Stats",
+      "mean_rank": 2.930379746835443,
+      "mean_accuracy": 0.8396475183332097,
+      "mean_balanced_accuracy": 0.8223876486178321,
+      "mean_rank_balanced": 2.8987341772151898,
+      "total_minutes": 416.11040555555553,
+      "median_feature_mb": 8.2595,
+      "max_feature_mb": 1081.996,
+      "seeds": 3
+    },
+    {
+      "method": "MiniRocket+Mantis",
+      "mean_rank": 2.9968354430379747,
+      "mean_accuracy": 0.8412358044696432,
+      "mean_balanced_accuracy": 0.8250559950821542,
+      "mean_rank_balanced": 2.971518987341772,
+      "total_minutes": 412.58374999999995,
+      "median_feature_mb": 8.251999999999999,
+      "max_feature_mb": 1052.877,
+      "seeds": 3
+    },
+    {
+      "method": "MiniRocket",
+      "mean_rank": 3.651898734177215,
+      "mean_accuracy": 0.8379367816833261,
+      "mean_balanced_accuracy": 0.8211743388562579,
+      "mean_rank_balanced": 3.5031645569620253,
+      "total_minutes": 17.269405555555558,
+      "median_feature_mb": 7.702500000000001,
+      "max_feature_mb": 340.364,
+      "seeds": 3
+    },
+    {
+      "method": "MiniRocket+Stats",
+      "mean_rank": 3.7373417721518987,
+      "mean_accuracy": 0.8329886215765058,
+      "mean_balanced_accuracy": 0.8145664460785051,
+      "mean_rank_balanced": 3.6677215189873418,
+      "total_minutes": 20.711927777777777,
+      "median_feature_mb": 7.8065,
+      "max_feature_mb": 340.67,
+      "seeds": 3
+    },
+    {
+      "method": "Mantis+Stats (ridge)",
+      "mean_rank": 5.237341772151899,
+      "mean_accuracy": 0.8022553653183352,
+      "mean_balanced_accuracy": 0.7785800683623969,
+      "mean_rank_balanced": 5.281645569620253,
+      "total_minutes": 400.54417222222224,
+      "median_feature_mb": 0.303,
+      "max_feature_mb": 857.401,
+      "seeds": 3
+    },
+    {
+      "method": "Mantis (ridge)",
+      "mean_rank": 5.582278481012659,
+      "mean_accuracy": 0.8003917555913326,
+      "mean_balanced_accuracy": 0.7783888765296543,
+      "mean_rank_balanced": 5.629746835443038,
+      "total_minutes": 397.45435000000003,
+      "median_feature_mb": 0.293,
+      "max_feature_mb": 828.281,
+      "seeds": 3
+    },
+    {
+      "method": "Mantis+Stats (RF)",
+      "mean_rank": 6.003164556962025,
+      "mean_accuracy": 0.7928615948110715,
+      "mean_balanced_accuracy": 0.7685935420876561,
+      "mean_rank_balanced": 6.034810126582278,
+      "total_minutes": 400.4621166666667,
+      "median_feature_mb": 0.303,
+      "max_feature_mb": 857.401,
+      "seeds": 3
+    },
+    {
+      "method": "Mantis (RF)",
+      "mean_rank": 6.75,
+      "mean_accuracy": 0.7815557356572734,
+      "mean_balanced_accuracy": 0.7571832744955656,
+      "mean_rank_balanced": 6.743670886075949,
+      "total_minutes": 397.32414444444447,
+      "median_feature_mb": 0.293,
+      "max_feature_mb": 828.281,
+      "seeds": 3
+    },
+    {
+      "method": "Stats (ridge)",
+      "mean_rank": 8.259493670886076,
+      "mean_accuracy": 0.6325588190271482,
+      "mean_balanced_accuracy": 0.596721637073444,
+      "mean_rank_balanced": 8.376582278481013,
+      "total_minutes": 3.417161111111111,
+      "median_feature_mb": 0.01,
+      "max_feature_mb": 29.119,
+      "seeds": 3
+    },
+    {
+      "method": "Majority class",
+      "mean_rank": 9.85126582278481,
+      "mean_accuracy": 0.30966624123889286,
+      "mean_balanced_accuracy": 0.26872512964285117,
+      "mean_rank_balanced": 9.89240506329114,
+      "total_minutes": 0.0031833333333333336,
+      "median_feature_mb": 0.0,
+      "max_feature_mb": 0.0,
+      "seeds": 3
+    }
+  ],
+  "ridge_alpha_at_grid_edge_fraction": {
+    "Mantis (ridge)": 0.24050632911392406,
+    "Mantis+Stats (ridge)": 0.20253164556962025,
+    "MiniRocket": 0.7341772151898734,
+    "MiniRocket+Mantis": 0.7278481012658228,
+    "MiniRocket+Mantis+Stats": 0.689873417721519,
+    "MiniRocket+Stats": 0.6645569620253164,
+    "Stats (ridge)": 0.08860759493670886
+  },
+  "friedman": {
+    "chi2": 852.0831351094196,
+    "p": 1.2987030701517063e-177,
+    "k": 10,
+    "n": 158
+  },
+  "planned": [
+    {
+      "comparison": "Mantis+Stats (RF) vs Mantis (RF)",
+      "question": "Does scale information help Mantis?",
+      "n": 158,
+      "mean_diff_pp": 1.1305859153798135,
+      "wins": 106,
+      "ties": 15,
+      "losses": 37,
+      "gain_>1pp": 61,
+      "loss_>1pp": 8,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "comparison": "MiniRocket+Mantis vs MiniRocket",
+      "question": "Does Mantis add to MiniRocket?",
+      "n": 158,
+      "mean_diff_pp": 0.32990227863172367,
+      "wins": 82,
+      "ties": 18,
+      "losses": 58,
+      "gain_>1pp": 47,
+      "loss_>1pp": 32,
+      "p": "0.086",
+      "p_holm": "0.259"
+    },
+    {
+      "comparison": "MiniRocket+Mantis+Stats vs MiniRocket+Mantis",
+      "question": "Do statistics add on top?",
+      "n": 158,
+      "mean_diff_pp": -0.1588286136433824,
+      "wins": 66,
+      "ties": 29,
+      "losses": 63,
+      "gain_>1pp": 20,
+      "loss_>1pp": 24,
+      "p": "0.775",
+      "p_holm": "0.775"
+    },
+    {
+      "comparison": "MiniRocket+Mantis+Stats vs MiniRocket",
+      "question": "Full model vs strongest baseline",
+      "n": 158,
+      "mean_diff_pp": 0.17107366498834126,
+      "wins": 77,
+      "ties": 18,
+      "losses": 63,
+      "gain_>1pp": 45,
+      "loss_>1pp": 31,
+      "p": "0.142",
+      "p_holm": "0.284"
+    },
+    {
+      "comparison": "Mantis (ridge) vs Mantis (RF)",
+      "question": "Control: classifier change only",
+      "n": 158,
+      "mean_diff_pp": 1.8836019934059245,
+      "wins": 103,
+      "ties": 10,
+      "losses": 45,
+      "gain_>1pp": 84,
+      "loss_>1pp": 29,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    }
+  ],
+  "post_hoc": [
+    {
+      "comparison": "Mantis+Stats (ridge) vs Mantis (RF)",
+      "question": "Best Mantis-only setup vs the paper's protocol",
+      "n": 158,
+      "mean_diff_pp": 2.069962966106199,
+      "wins": 112,
+      "ties": 7,
+      "losses": 39,
+      "gain_>1pp": 89,
+      "loss_>1pp": 22,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "comparison": "Mantis+Stats (ridge) vs Mantis (ridge)",
+      "question": "Do statistics still help with a ridge head?",
+      "n": 158,
+      "mean_diff_pp": 0.18636097270027444,
+      "wins": 81,
+      "ties": 21,
+      "losses": 56,
+      "gain_>1pp": 42,
+      "loss_>1pp": 30,
+      "p": "0.033",
+      "p_holm": "0.033"
+    }
+  ],
+  "stats_ablation": [
+    {
+      "classifier": "RF200",
+      "subset": "level",
+      "statistics": "mean, std, min, max",
+      "mean_accuracy_M": 0.7815557356572734,
+      "mean_accuracy": 0.7862249427851505,
+      "n": 158,
+      "mean_diff_pp": 0.4669207127877208,
+      "wins": 87,
+      "ties": 20,
+      "losses": 51,
+      "gain_>1pp": 31,
+      "loss_>1pp": 12,
+      "p": "0.002",
+      "p_holm": "0.014"
+    },
+    {
+      "classifier": "RF200",
+      "subset": "slope",
+      "statistics": "slope",
+      "mean_accuracy_M": 0.7815557356572734,
+      "mean_accuracy": 0.7835449923123087,
+      "n": 158,
+      "mean_diff_pp": 0.19892566550353494,
+      "wins": 80,
+      "ties": 19,
+      "losses": 59,
+      "gain_>1pp": 26,
+      "loss_>1pp": 12,
+      "p": "0.012",
+      "p_holm": "0.062"
+    },
+    {
+      "classifier": "RF200",
+      "subset": "diff",
+      "statistics": "diff mean, std, min, max",
+      "mean_accuracy_M": 0.7815557356572734,
+      "mean_accuracy": 0.7876126300281101,
+      "n": 158,
+      "mean_diff_pp": 0.6056894370836664,
+      "wins": 88,
+      "ties": 22,
+      "losses": 48,
+      "gain_>1pp": 39,
+      "loss_>1pp": 12,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "classifier": "RF200",
+      "subset": "all",
+      "statistics": "all nine",
+      "mean_accuracy_M": 0.7815557356572734,
+      "mean_accuracy": 0.7928615948110715,
+      "n": 158,
+      "mean_diff_pp": 1.1305859153798135,
+      "wins": 106,
+      "ties": 15,
+      "losses": 37,
+      "gain_>1pp": 61,
+      "loss_>1pp": 8,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "classifier": "ridge",
+      "subset": "level",
+      "statistics": "mean, std, min, max",
+      "mean_accuracy_M": 0.8003917555913326,
+      "mean_accuracy": 0.7986216510765205,
+      "n": 158,
+      "mean_diff_pp": -0.1770104514812219,
+      "wins": 73,
+      "ties": 21,
+      "losses": 64,
+      "gain_>1pp": 37,
+      "loss_>1pp": 40,
+      "p": "0.979",
+      "p_holm": "1.000"
+    },
+    {
+      "classifier": "ridge",
+      "subset": "slope",
+      "statistics": "slope",
+      "mean_accuracy_M": 0.8003917555913326,
+      "mean_accuracy": 0.7998035238537804,
+      "n": 158,
+      "mean_diff_pp": -0.058823173755204745,
+      "wins": 59,
+      "ties": 33,
+      "losses": 66,
+      "gain_>1pp": 25,
+      "loss_>1pp": 28,
+      "p": "0.483",
+      "p_holm": "1.000"
+    },
+    {
+      "classifier": "ridge",
+      "subset": "diff",
+      "statistics": "diff mean, std, min, max",
+      "mean_accuracy_M": 0.8003917555913326,
+      "mean_accuracy": 0.8003791436041152,
+      "n": 158,
+      "mean_diff_pp": -0.0012611987217228074,
+      "wins": 71,
+      "ties": 25,
+      "losses": 62,
+      "gain_>1pp": 39,
+      "loss_>1pp": 33,
+      "p": "0.576",
+      "p_holm": "1.000"
+    },
+    {
+      "classifier": "ridge",
+      "subset": "all",
+      "statistics": "all nine",
+      "mean_accuracy_M": 0.8003917555913326,
+      "mean_accuracy": 0.8022553653183352,
+      "n": 158,
+      "mean_diff_pp": 0.18636097270027444,
+      "wins": 81,
+      "ties": 21,
+      "losses": 56,
+      "gain_>1pp": 42,
+      "loss_>1pp": 30,
+      "p": "0.033",
+      "p_holm": "0.134"
+    }
+  ],
+  "overview_with_dtw": {
+    "n_datasets": 133,
+    "dtw_skipped": 26,
+    "table": [
+      {
+        "method": "MiniRocket+Mantis+Stats",
+        "mean_rank": 3.0714285714285716,
+        "mean_accuracy": 0.8394388346437452,
+        "mean_balanced_accuracy": 0.8249532601898205,
+        "total_minutes": 23.06982222222222
+      },
+      {
+        "method": "MiniRocket+Mantis",
+        "mean_rank": 3.2481203007518795,
+        "mean_accuracy": 0.8407648379199657,
+        "mean_balanced_accuracy": 0.8272908913242302,
+        "total_minutes": 23.044605555555556
+      },
+      {
+        "method": "MiniRocket",
+        "mean_rank": 3.8157894736842106,
+        "mean_accuracy": 0.838175416633105,
+        "mean_balanced_accuracy": 0.8242291157730756,
+        "total_minutes": 1.2280444444444443
+      },
+      {
+        "method": "MiniRocket+Stats",
+        "mean_rank": 3.9511278195488724,
+        "mean_accuracy": 0.832886633504065,
+        "mean_balanced_accuracy": 0.8172353523534472,
+        "total_minutes": 1.3283944444444444
+      },
+      {
+        "method": "Mantis+Stats (ridge)",
+        "mean_rank": 5.481203007518797,
+        "mean_accuracy": 0.8008857260712856,
+        "mean_balanced_accuracy": 0.778986859666861,
+        "total_minutes": 21.906722222222225
+      },
+      {
+        "method": "Mantis (ridge)",
+        "mean_rank": 5.823308270676692,
+        "mean_accuracy": 0.7996701122665055,
+        "mean_balanced_accuracy": 0.7800731800304279,
+        "total_minutes": 21.84725
+      },
+      {
+        "method": "Mantis+Stats (RF)",
+        "mean_rank": 6.1992481203007515,
+        "mean_accuracy": 0.7927786392973473,
+        "mean_balanced_accuracy": 0.7717082522946314,
+        "total_minutes": 23.199283333333334
+      },
+      {
+        "method": "Mantis (RF)",
+        "mean_rank": 6.969924812030075,
+        "mean_accuracy": 0.7848262953614905,
+        "mean_balanced_accuracy": 0.7637551127089862,
+        "total_minutes": 23.234972222222222
+      },
+      {
+        "method": "1NN-DTW",
+        "mean_rank": 7.7293233082706765,
+        "mean_accuracy": 0.737978477328377,
+        "mean_balanced_accuracy": 0.7265030162739603,
+        "total_minutes": 85.75083333333333
+      },
+      {
+        "method": "Stats (ridge)",
+        "mean_rank": 8.928571428571429,
+        "mean_accuracy": 0.6331963816977091,
+        "mean_balanced_accuracy": 0.6015119805545219,
+        "total_minutes": 0.07579444444444444
+      },
+      {
+        "method": "Majority class",
+        "mean_rank": 10.781954887218046,
+        "mean_accuracy": 0.3184427602785614,
+        "mean_balanced_accuracy": 0.28185339012406674,
+        "total_minutes": 0.0019500000000000001
+      }
+    ]
+  },
+  "mcm_row": [
+    {
+      "vs": "Majority class",
+      "n": 158,
+      "mean_diff_pp": 52.99812770943168,
+      "wins": 156,
+      "ties": 0,
+      "losses": 2,
+      "gain_>1pp": 155,
+      "loss_>1pp": 2,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "vs": "Mantis (RF)",
+      "n": 158,
+      "mean_diff_pp": 5.80917826759362,
+      "wins": 138,
+      "ties": 5,
+      "losses": 15,
+      "gain_>1pp": 121,
+      "loss_>1pp": 8,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "vs": "Mantis+Stats (RF)",
+      "n": 158,
+      "mean_diff_pp": 4.678592352213807,
+      "wins": 132,
+      "ties": 8,
+      "losses": 18,
+      "gain_>1pp": 114,
+      "loss_>1pp": 11,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "vs": "Mantis (ridge)",
+      "n": 158,
+      "mean_diff_pp": 3.9255762741876956,
+      "wins": 124,
+      "ties": 16,
+      "losses": 18,
+      "gain_>1pp": 105,
+      "loss_>1pp": 11,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "vs": "Stats (ridge)",
+      "n": 158,
+      "mean_diff_pp": 20.70886993060613,
+      "wins": 151,
+      "ties": 1,
+      "losses": 6,
+      "gain_>1pp": 144,
+      "loss_>1pp": 6,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "vs": "Mantis+Stats (ridge)",
+      "n": 158,
+      "mean_diff_pp": 3.739215301487421,
+      "wins": 123,
+      "ties": 19,
+      "losses": 16,
+      "gain_>1pp": 97,
+      "loss_>1pp": 13,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "vs": "MiniRocket",
+      "n": 158,
+      "mean_diff_pp": 0.17107366498834126,
+      "wins": 77,
+      "ties": 18,
+      "losses": 63,
+      "gain_>1pp": 45,
+      "loss_>1pp": 31,
+      "p": "0.142",
+      "p_holm": "0.284"
+    },
+    {
+      "vs": "MiniRocket+Stats",
+      "n": 158,
+      "mean_diff_pp": 0.6658896756703895,
+      "wins": 93,
+      "ties": 18,
+      "losses": 47,
+      "gain_>1pp": 53,
+      "loss_>1pp": 26,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "vs": "MiniRocket+Mantis",
+      "n": 158,
+      "mean_diff_pp": -0.1588286136433824,
+      "wins": 66,
+      "ties": 29,
+      "losses": 63,
+      "gain_>1pp": 20,
+      "loss_>1pp": 24,
+      "p": "0.775",
+      "p_holm": "0.775"
+    }
+  ],
+  "groups": [
+    {
+      "group": "all",
+      "n": 158,
+      "Mantis (RF)": 0.7815557356572734,
+      "Mantis+Stats (RF)": 0.7928615948110715,
+      "MiniRocket": 0.8379367816833261,
+      "MiniRocket+Mantis": 0.8412358044696432,
+      "MiniRocket+Mantis+Stats": 0.8396475183332097,
+      "full_minus_MR_pp": 0.17107366498834126,
+      "W/T/L vs MR": "77/18/63",
+      "stats_gain_for_Mantis_pp": 1.1305859153798135
+    },
+    {
+      "group": "univariate",
+      "n": 129,
+      "Mantis (RF)": 0.7912244666498595,
+      "Mantis+Stats (RF)": 0.8017943127092169,
+      "MiniRocket": 0.8488625250427401,
+      "MiniRocket+Mantis": 0.8520617505244673,
+      "MiniRocket+Mantis+Stats": 0.8512294082275551,
+      "full_minus_MR_pp": 0.23668831848150074,
+      "W/T/L vs MR": "62/14/53",
+      "stats_gain_for_Mantis_pp": 1.0569846059357437
+    },
+    {
+      "group": "multivariate",
+      "n": 29,
+      "Mantis (RF)": 0.7385465529661146,
+      "Mantis+Stats (RF)": 0.75312640140208,
+      "MiniRocket": 0.7893360612224853,
+      "MiniRocket+Mantis": 0.793079009949909,
+      "MiniRocket+Mantis+Stats": 0.7881280770790524,
+      "full_minus_MR_pp": -0.12079841434329926,
+      "W/T/L vs MR": "15/4/10",
+      "stats_gain_for_Mantis_pp": 1.4579848435965366
+    },
+    {
+      "group": "length <= 512 (not downsampled)",
+      "n": 114,
+      "Mantis (RF)": 0.802262875629009,
+      "Mantis+Stats (RF)": 0.8127423779878421,
+      "MiniRocket": 0.8567891797859014,
+      "MiniRocket+Mantis": 0.8593282969536986,
+      "MiniRocket+Mantis+Stats": 0.8570213162039517,
+      "full_minus_MR_pp": 0.023213641805031097,
+      "W/T/L vs MR": "55/14/45",
+      "stats_gain_for_Mantis_pp": 1.047950235883292
+    },
+    {
+      "group": "length > 1000 (downsampled 2x+)",
+      "n": 27,
+      "Mantis (RF)": 0.6987549756494592,
+      "Mantis+Stats (RF)": 0.7056942045991279,
+      "MiniRocket": 0.7578056783333122,
+      "MiniRocket+Mantis": 0.7630330811993695,
+      "MiniRocket+Mantis+Stats": 0.7608638206549823,
+      "full_minus_MR_pp": 0.3058142321670166,
+      "W/T/L vs MR": "13/1/13",
+      "stats_gain_for_Mantis_pp": 0.6939228949668641
+    },
+    {
+      "group": "more than 10 classes",
+      "n": 32,
+      "Mantis (RF)": 0.6915189275203737,
+      "Mantis+Stats (RF)": 0.7083270243949651,
+      "MiniRocket": 0.7858826084319611,
+      "MiniRocket+Mantis": 0.7895236547311166,
+      "MiniRocket+Mantis+Stats": 0.7919491229651483,
+      "full_minus_MR_pp": 0.6066514533187132,
+      "W/T/L vs MR": "17/2/13",
+      "stats_gain_for_Mantis_pp": 1.680809687459129
+    },
+    {
+      "group": "at most 50 training cases",
+      "n": 35,
+      "Mantis (RF)": 0.872396086743236,
+      "Mantis+Stats (RF)": 0.8824285181063797,
+      "MiniRocket": 0.9326502673765807,
+      "MiniRocket+Mantis": 0.9350478685513114,
+      "MiniRocket+Mantis+Stats": 0.9249146244578723,
+      "full_minus_MR_pp": -0.7735642918708546,
+      "W/T/L vs MR": "9/6/20",
+      "stats_gain_for_Mantis_pp": 1.0032431363143821
+    },
+    {
+      "group": "unequal length",
+      "n": 16,
+      "Mantis (RF)": 0.7635815263232397,
+      "Mantis+Stats (RF)": 0.7826400328902836,
+      "MiniRocket": 0.8166608144376707,
+      "MiniRocket+Mantis": 0.8272669056644691,
+      "MiniRocket+Mantis+Stats": 0.8310251728531614,
+      "full_minus_MR_pp": 1.4364358415490706,
+      "W/T/L vs MR": "11/0/5",
+      "stats_gain_for_Mantis_pp": 1.9058506567043898
+    }
+  ],
+  "sanity_checks": {
+    "MiniRocket_vs_04": {
+      "n": 158,
+      "mean_abs_diff": 0.0005918974498012217,
+      "max_abs_diff": 0.022831050228310446
+    },
+    "MantisRF_vs_02": {
+      "n": 158,
+      "mean_abs_diff": 0.001300439093939822,
+      "max_abs_diff": 0.026666666666666672
+    }
+  }
+}

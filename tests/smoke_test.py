@@ -16,7 +16,9 @@ os.environ["MANTIS_RESULTS_DIR"] = str(tmp / "results")
 os.environ["MANTIS_CACHE_DIR"] = str(tmp / "cache")
 os.environ["MANTIS_DATA_DIR"] = str(tmp / "data")
 os.environ["MANTIS_ALLOW_ANY_ENV"] = "1"  # the smoke test may run on any Python
+os.environ["MPLBACKEND"] = "Agg"  # no GUI backend: Tk objects crash when later scripts use threads
 sys.path.insert(0, str(ROOT))
+sys.stdout.reconfigure(encoding="utf-8")  # Windows: scripts print non-ASCII (e.g. Δ)
 
 import numpy as np  # noqa: E402
 
@@ -70,4 +72,10 @@ run("03_finetune.py", "--datasets", "Plain", "--epochs", "4", "--eval-every", "2
     "--seeds", "0", "1", "--device", "cpu")  # resume
 run("04_minirocket.py", "--datasets", names, "--seeds", "0")
 run("06_summarise.py")
+run("07_fusion.py", "--datasets", names, "--seeds", "0", "1", "--device", "cpu")
+run("09_stats_ablation.py", "--datasets", names, "--seeds", "0", "1", "--device", "cpu")
+run("09_stats_ablation.py", "--datasets", names, "--seeds", "0", "1", "--device", "cpu")  # resume
+run("10_dtw_baseline.py", "--datasets", names, "--max-pairs", "2000")  # Multi (3 channels) is skipped
+run("10_dtw_baseline.py", "--datasets", names)  # resume: only the skipped one runs
+run("08_fusion_report.py")
 print(f"\nSmoke test passed. Outputs in {tmp}")

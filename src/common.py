@@ -106,7 +106,7 @@ class CsvLog:
         self._keys = set()
         self._fields = None
         if self.path.exists() and self.path.stat().st_size > 0:
-            with open(self.path, newline="") as f:
+            with open(self.path, newline="", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 self._fields = reader.fieldnames
                 for row in reader:
@@ -126,7 +126,7 @@ class CsvLog:
         if extra:
             raise ValueError(f"{self.path.name}: unexpected columns {extra}; "
                              "delete or rename the old CSV if the schema changed")
-        with open(self.path, "a", newline="") as f:
+        with open(self.path, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=self._fields)
             if new_file:
                 writer.writeheader()
@@ -136,5 +136,5 @@ class CsvLog:
 
 def save_json(obj, path: Path) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, indent=2, default=str)

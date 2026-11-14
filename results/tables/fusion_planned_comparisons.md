@@ -1,0 +1,7 @@
+| comparison                                   | question                            |   n |   mean_diff_pp |   wins |   ties |   losses |   gain_>1pp |   loss_>1pp | p      | p_holm   |
+|:---------------------------------------------|:------------------------------------|----:|---------------:|-------:|-------:|---------:|------------:|------------:|:-------|:---------|
+| Mantis+Stats (RF) vs Mantis (RF)             | Does scale information help Mantis? | 158 |           1.13 |    106 |     15 |       37 |          61 |           8 | <0.001 | <0.001   |
+| MiniRocket+Mantis vs MiniRocket              | Does Mantis add to MiniRocket?      | 158 |           0.33 |     82 |     18 |       58 |          47 |          32 | 0.086  | 0.259    |
+| MiniRocket+Mantis+Stats vs MiniRocket+Mantis | Do statistics add on top?           | 158 |          -0.16 |     66 |     29 |       63 |          20 |          24 | 0.775  | 0.775    |
+| MiniRocket+Mantis+Stats vs MiniRocket        | Full model vs strongest baseline    | 158 |           0.17 |     77 |     18 |       63 |          45 |          31 | 0.142  | 0.284    |
+| Mantis (ridge) vs Mantis (RF)                | Control: classifier change only     | 158 |           1.88 |    103 |     10 |       45 |          84 |          29 | <0.001 | <0.001   |

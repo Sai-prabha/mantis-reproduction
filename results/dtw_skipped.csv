@@ -1,0 +1,27 @@
+dataset,pairs,max_pairs,reason
+Crop,120960000,2000000,n_train * n_test * n_channels above --max-pairs
+ECG5000,2250000,2000000,n_train * n_test * n_channels above --max-pairs
+ElectricDevices,68828386,2000000,n_train * n_test * n_channels above --max-pairs
+FordA,4753320,2000000,n_train * n_test * n_channels above --max-pairs
+FordB,2945160,2000000,n_train * n_test * n_channels above --max-pairs
+MelbournePedestrian,2912166,2000000,n_train * n_test * n_channels above --max-pairs
+NonInvasiveFetalECGThorax1,3537000,2000000,n_train * n_test * n_channels above --max-pairs
+NonInvasiveFetalECGThorax2,3537000,2000000,n_train * n_test * n_channels above --max-pairs
+StarLightCurves,8236000,2000000,n_train * n_test * n_channels above --max-pairs
+TwoPatterns,4000000,2000000,n_train * n_test * n_channels above --max-pairs
+UWaveGestureLibraryAll,3209472,2000000,n_train * n_test * n_channels above --max-pairs
+UWaveGestureLibraryX,3209472,2000000,n_train * n_test * n_channels above --max-pairs
+UWaveGestureLibraryY,3209472,2000000,n_train * n_test * n_channels above --max-pairs
+UWaveGestureLibraryZ,3209472,2000000,n_train * n_test * n_channels above --max-pairs
+Wafer,6164000,2000000,n_train * n_test * n_channels above --max-pairs
+CharacterTrajectories,6125976,2000000,n_train * n_test * n_channels above --max-pairs
+DuckDuckGeese,3362500,2000000,n_train * n_test * n_channels above --max-pairs
+FaceDetection,2988915840,2000000,n_train * n_test * n_channels above --max-pairs
+Heartbeat,2551020,2000000,n_train * n_test * n_channels above --max-pairs
+InsectWingbeat,200000000,2000000,n_train * n_test * n_channels above --max-pairs
+LSST,36383364,2000000,n_train * n_test * n_channels above --max-pairs
+PEMS-SF,44481933,2000000,n_train * n_test * n_channels above --max-pairs
+PhonemeSpectra,122267145,2000000,n_train * n_test * n_channels above --max-pairs
+SpokenArabicDigits,188645613,2000000,n_train * n_test * n_channels above --max-pairs
+EMOPain,,2000000,"load failed: ValueError: File name EMOPain is not in the list of valid files to download, see aeon.datasets.tser_datasets.tsr_zenodo for the list of valid keys for regression and aeon.datasets.tsc_datasets.tsc_zenodo for classification."
+MotionSenseHAR,3071880,2000000,n_train * n_test * n_channels above --max-pairs

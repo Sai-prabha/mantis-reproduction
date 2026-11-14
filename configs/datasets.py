@@ -172,3 +172,14 @@ def resolve(selection: str) -> list[str]:
     if sel == "unequal":
         return list(UNEQUAL_LENGTH)
     return [s.strip() for s in selection.split(",") if s.strip()]
+
+
+def archive_of(name: str) -> str:
+    """Archive label used in the results CSVs (same rule as scripts/07_fusion.py)."""
+    if name in OTHERS:
+        return "other"
+    if name in uea27():
+        return "uea"
+    if name in ucr128():
+        return "ucr"
+    return "unknown"

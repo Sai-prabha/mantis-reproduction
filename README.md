@@ -102,6 +102,10 @@ Run from the repo root with the `mantis` environment active.
 | `python scripts/03_finetune.py --datasets ECG200,GunPoint,Wafer,Adiac,FiftyWords --package-defaults --seeds 0` | Package defaults vs paper protocol |
 | `python scripts/03_finetune.py --datasets tier2 --regimes full --seeds 0 --fixed-lr 0.001` | Fine-tuning breadth: the other 83 UCR datasets of v1's 131 |
 | `python scripts/06_summarise.py` | All tables, figures and the results table below |
+| `python scripts/07_fusion.py --datasets all` | Section 4: Mantis, statistics and MiniRocket feature fusion (10 methods, 3 seeds) |
+| `python scripts/09_stats_ablation.py --datasets all` | Section 4: which statistics help Mantis (level, slope, diff, all; RF and ridge) |
+| `python scripts/10_dtw_baseline.py --datasets all` | Course baseline 1NN-DTW (10% window); skips large datasets, listed in `results/dtw_skipped.csv` |
+| `python scripts/08_fusion_report.py` | Fusion tables, tests and figures; includes the ablation and DTW tables when their CSVs exist |
 
 Every script appends to a CSV in `results/` and skips work already recorded,
 so an interrupted run resumes where it stopped.
@@ -183,7 +187,7 @@ datasets present in both. In the fine-tuning rows, tier 1 is averaged over its
 ```
 configs/datasets.py     dataset lists (UCR-128, UEA-27, others, tier 1, tier 2, unequal)
 src/                    data loading, model helpers, calibration metrics
-scripts/00-06           one script per step above
+scripts/00-10           one script per step above
 tests/smoke_test.py     offline run of every script on synthetic data
 targets/                paper numbers from v1's appendix Tables 3, 4, 6, 7 and 8 (see targets/README.md)
 results/                CSV logs, tables, figures (committed)

@@ -38,7 +38,7 @@ def read(path: Path) -> pd.DataFrame | None:
 
 def to_md(df: pd.DataFrame, name: str, floatfmt: str = ".4f") -> None:
     TABLES.mkdir(parents=True, exist_ok=True)
-    (TABLES / f"{name}.md").write_text(df.to_markdown(index=False, floatfmt=floatfmt))
+    (TABLES / f"{name}.md").write_text(df.to_markdown(index=False, floatfmt=floatfmt), encoding="utf-8")
     print(f"\n### {name}\n{df.to_markdown(index=False, floatfmt=floatfmt)}")
 
 
@@ -565,16 +565,16 @@ def headline():
         return
     table = pd.DataFrame(rows).to_markdown(index=False)
     TABLES.mkdir(parents=True, exist_ok=True)
-    (TABLES / "headline.md").write_text(table)
+    (TABLES / "headline.md").write_text(table, encoding="utf-8")
     print("\n### headline (also written into README.md)\n" + table)
     readme = RESULTS_DIR.parent / "README.md"  # the repo README (absent in the smoke test)
     if not readme.exists():
         return
-    text = readme.read_text()
+    text = readme.read_text(encoding="utf-8")
     if README_START in text and README_END in text:
         pre, rest = text.split(README_START, 1)
         _, post = rest.split(README_END, 1)
-        readme.write_text(f"{pre}{README_START}\n{table}\n{README_END}{post}")
+        readme.write_text(f"{pre}{README_START}\n{table}\n{README_END}{post}", encoding="utf-8")
 
 
 def main():
@@ -584,7 +584,7 @@ def main():
     report_numbers()
     headline()
     RESULTS_DIR.mkdir(exist_ok=True)
-    (RESULTS_DIR / "summary.json").write_text(json.dumps(summary, indent=2, default=float))
+    (RESULTS_DIR / "summary.json").write_text(json.dumps(summary, indent=2, default=float), encoding="utf-8")
     print("\nsummary.json:\n" + json.dumps(summary, indent=2, default=float))
 
 

@@ -315,7 +315,7 @@ def scatter_by_type(m: pd.DataFrame, n_labels: int = 5):
             ax.annotate(r.dataset, (r.paper, r.ours), xytext=xy, textcoords="data", fontsize=6,
                         color="#3d3d3a", va="center",
                         arrowprops=dict(arrowstyle="-", lw=0.4, color="#8a8980", shrinkA=1, shrinkB=2))
-    ax.set(xlim=(0.15, 1.02), ylim=(0.15, 1.02), xlabel="v1 Accuracy", ylabel="Reproducibility Accuracy (3 seeds)")
+    ax.set(xlim=(0.15, 1.02), ylim=(0.15, 1.02), xlabel="Version 1 Accuracy", ylabel="Reproducibility Accuracy (3 seeds)")
     ax.grid(color="#e6e5e0", lw=0.5)
     ax.set_axisbelow(True)
     for sp in ("top", "right"):

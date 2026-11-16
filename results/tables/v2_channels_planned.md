@@ -1,0 +1,6 @@
+| comparison                      | question                               |   n |   mean_diff_pp |   wins |   ties |   losses |   gain_>1pp |   loss_>1pp |    p |   p_holm |
+|:--------------------------------|:---------------------------------------|----:|---------------:|-------:|-------:|---------:|------------:|------------:|-----:|---------:|
+| pca8 (ridge) vs full (ridge)    | PCA to 8 channels vs all channels      |  14 |          -4.65 |      4 |      0 |       10 |           4 |           7 | 0.27 |     0.54 |
+| random8 (ridge) vs full (ridge) | Random 8 channels vs all channels      |  14 |          -4.58 |      1 |      1 |       12 |           1 |           9 | 0.00 |     0.01 |
+| summary (ridge) vs full (ridge) | Three summary channels vs all channels |  14 |         -10.34 |      2 |      0 |       12 |           2 |          11 | 0.00 |     0.01 |
+| pca8 (ridge) vs random8 (ridge) | Is PCA better than a random subset?    |  14 |          -0.07 |      8 |      0 |        6 |           4 |           3 | 1.00 |     1.00 |

@@ -188,3 +188,14 @@ tests/smoke_test.py     offline run of every script on synthetic data
 targets/                paper numbers from v1's appendix Tables 3, 4, 6, 7 and 8 (see targets/README.md)
 results/                CSV logs, tables, figures (committed)
 ```
+
+## Improvements (Sections IV and V of the report)
+
+The improvement experiments live on two branches, each with its own README giving setup, commands and results:
+
+- [`improvements`](https://github.com/Sai-prabha/mantis-reproduction/tree/improvements): frozen-encoder readings (channel pooling, cross-channel views, temporal halves, channel shuffle) and calibration of the frozen forest (`scripts/run_views.py`, `run_calibration.py`, `run_bottleneck.py`, `evaluate.py`). Run from a checkout of this repository after `scripts/00_dataset_stats.py` and `scripts/02_zero_shot.py`.
+- [`improvements-v2`](https://github.com/Sai-prabha/mantis-reproduction/tree/improvements-v2): fusion with MiniRocket and statistics, the statistics ablation, 1NN-DTW, multi-scale window embeddings, channel reduction and resampled evaluation (scripts 07 to 16).
+
+## Generative AI use
+
+Generative AI tools were used in this project, and all outputs were reviewed and checked by the authors. Claude (Anthropic) was used to help write and debug the code, monitor the experiments, and edit parts of the report, including grammar and language. Every reported number was regenerated from the logged results and checked against the paper.

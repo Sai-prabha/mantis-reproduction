@@ -1,18 +1,12 @@
-"""Tables and figures for the v3 improvements (scripts 11 to 14), following the
-evaluation checklist of lecture weeks 7 to 9:
-  * per-dataset score table and mean ranks (not mean accuracy) per experiment
-  * planned pairwise comparisons, fixed BEFORE the results are seen, two-sided
-    Wilcoxon signed-rank over datasets, Holm-corrected within each family
-  * Friedman test and a critical difference diagram where 3+ methods are compared
-  * cost next to accuracy (embedding time, feature size)
-  * resampling: mean +- std over resamples per dataset, then the same paired tests
-  * probability metrics: AUROC, log loss, ECE, not only accuracy
-Each section runs only if its CSV exists, so partial runs still produce tables.
+"""Tables and figures for the improvements (scripts 11 to 14).
 
-Outputs: results/tables/v3_*.md, results/figures/v3_*.pdf, results/v3_summary.json.
+Per experiment: mean ranks, Friedman test, CD diagram, planned Wilcoxon tests
+with Holm correction, and cost next to accuracy. Resamples are averaged per
+dataset before testing. Sections without a CSV are skipped.
+Writes results/tables/v2_*.md, results/figures/v2_*.pdf, results/v2_summary.json.
 
 Usage
-  python scripts/15_improve_report.py
+  python scripts/15_report.py
 """
 import argparse
 import json
@@ -91,7 +85,7 @@ def overview(acc: pd.DataFrame, cost: pd.DataFrame | None, name: str) -> pd.Data
     fr = friedman(acc.dropna())
     print(f"\nFriedman chi2 = {fr['chi2']:.2f}, p = {pfmt(fr['p'])} (k = {fr['k']}, N = {fr['n']})")
     summary[f"{name}_friedman"] = fr
-    to_md(table, TABLES / f"v3_{name}_overview")
+    to_md(table, TABLES / f"v2_{name}_overview")
     summary[f"{name}_overview"] = table.to_dict(orient="records")
     return table
 
@@ -106,22 +100,22 @@ def section_multiscale():
     mr = minirocket_rows(acc.index)
     if mr is not None:
         acc["MiniRocket (ridge)"] = mr
-    # MiniRocket comes from fusion.csv; only datasets with every method are compared
+    # MiniRocket rows come from fusion.csv
     acc = acc.dropna()
     print(f"\n=== Multi-scale: {len(acc)} datasets with every method ===")
     cost = df.groupby("method")[["embed_seconds", "n_features"]].agg(
         embed_minutes=("embed_seconds", lambda s: s.sum() / 60 / max(df.seed.nunique(), 1)),
         median_features=("n_features", "median")).reset_index()
     overview(acc, cost, "multiscale")
-    to_md(acc.reset_index(), TABLES / "v3_multiscale_per_dataset")
+    to_md(acc.reset_index(), TABLES / "v2_multiscale_per_dataset")
     if PLANNED_MULTISCALE:
         t = comparison_table(acc, PLANNED_MULTISCALE)
-        to_md(t, TABLES / "v3_multiscale_planned", floatfmt=".2f")
+        to_md(t, TABLES / "v2_multiscale_planned", floatfmt=".2f")
         summary["multiscale_planned"] = t.to_dict(orient="records")
     else:
         print("[note] PLANNED_MULTISCALE is empty: no paired tests for the multi-scale experiment.")
     cd_cols = [c for c in acc.columns if c.endswith("(ridge)")]
-    cd_diagram(acc[cd_cols], FIGS / "v3_multiscale_cd.pdf")
+    cd_diagram(acc[cd_cols], FIGS / "v2_multiscale_cd.pdf")
     meta = df.groupby("dataset")[["max_len", "n_train", "n_classes"]].first()
     best_win = [c for c in acc.columns if c.startswith("M+W") and c.endswith("(ridge)")]
     if best_win and "M (ridge)" in acc:
@@ -129,16 +123,19 @@ def section_multiscale():
         t = pd.concat([acc[["M (ridge)"]], acc[best_win].max(axis=1).rename("best_windowed (ridge)"),
                        gain.rename("delta"), meta.loc[acc.index]], axis=1)
         t = t.reindex(gain.abs().sort_values(ascending=False).index).head(12).reset_index()
-        to_md(t, TABLES / "v3_multiscale_largest_changes")
+        to_md(t, TABLES / "v2_multiscale_largest_changes")
 
 
 def section_channels():
     path = RESULTS_DIR / "channel_reduce.csv"
     if not path.exists():
         return
-    df = pd.read_csv(path)
+    df = pd.read_csv(path).drop_duplicates(["dataset", "seed", "method", "classifier"])
     df["method"] = label(df.method, df.classifier)
-    acc = pivot(df, "accuracy").dropna()
+    # drop methods run on few datasets (e.g. --k 16)
+    acc = pivot(df, "accuracy")
+    acc = acc.loc[:, acc.notna().mean() > 0.5].dropna()
+    df = df[df.method.isin(acc.columns)]
     print(f"\n=== Channel reduction: {len(acc)} datasets with every method ===")
     secs = df[df.dataset.isin(acc.index)].groupby(["method", "dataset"]).embed_seconds.mean().groupby("method").sum()
     mb = df[df.dataset.isin(acc.index)].groupby("method").feature_mb.max()
@@ -146,14 +143,14 @@ def section_channels():
                          "speedup_vs_full": (secs["full (ridge)"] / secs).values if "full (ridge)" in secs else np.nan,
                          "max_feature_mb": mb.reindex(secs.index).values})
     overview(acc, cost, "channels")
-    to_md(acc.reset_index(), TABLES / "v3_channels_per_dataset")
+    to_md(acc.reset_index(), TABLES / "v2_channels_per_dataset")
     t = comparison_table(acc, PLANNED_CHANNELS)
     if not t.empty:
-        to_md(t, TABLES / "v3_channels_planned", floatfmt=".2f")
+        to_md(t, TABLES / "v2_channels_planned", floatfmt=".2f")
         summary["channels_planned"] = t.to_dict(orient="records")
-    cd_diagram(acc[[c for c in acc.columns if c.endswith("(ridge)")]], FIGS / "v3_channels_cd.pdf")
+    cd_diagram(acc[[c for c in acc.columns if c.endswith("(ridge)")]], FIGS / "v2_channels_cd.pdf")
     per = df.groupby(["dataset", "method"])[["accuracy", "embed_seconds", "channels_used", "channels_in"]].mean()
-    to_md(per.reset_index(), TABLES / "v3_channels_accuracy_vs_time", floatfmt=".3f")
+    to_md(per.reset_index(), TABLES / "v2_channels_accuracy_vs_time", floatfmt=".3f")
 
 
 def section_resample():
@@ -178,22 +175,22 @@ def section_resample():
                           "accuracy_official_split": official[mean.columns].mean().values,
                           "mean_std_over_resamples": std[mean.columns].mean().values,
                           "resamples": n_res}).sort_values("mean_rank")
-    to_md(table, TABLES / "v3_resample_overview")
+    to_md(table, TABLES / "v2_resample_overview")
     summary["resample_overview"] = table.to_dict(orient="records")
     t = comparison_table(mean_all, PLANNED_RESAMPLE)
     if not t.empty:
-        # each pair uses every dataset that has both methods, so n can differ between rows
+        # each pair uses all datasets with both methods, so n varies
         # practical check: datasets where the gap is below one resample std
         for i, (a, b, _) in enumerate([p for p in PLANNED_RESAMPLE if p[0] in mean_all and p[1] in mean_all]):
             gap = (mean_all[a] - mean_all[b]).abs()
             noise = np.sqrt((std_all[a] ** 2 + std_all[b] ** 2) / 2)
             both_present = mean_all[a].notna() & mean_all[b].notna()
             t.loc[i, "datasets_gap_below_1std"] = int(((gap < noise) & both_present).sum())
-        to_md(t, TABLES / "v3_resample_planned", floatfmt=".2f")
+        to_md(t, TABLES / "v2_resample_planned", floatfmt=".2f")
         summary["resample_planned"] = t.to_dict(orient="records")
     both = pd.concat([mean_all.add_suffix(" mean"), std_all.add_suffix(" std")], axis=1).sort_index(axis=1)
-    to_md(both.reset_index(), TABLES / "v3_resample_per_dataset")
-    cd_diagram(mean, FIGS / "v3_resample_cd.pdf")
+    to_md(both.reset_index(), TABLES / "v2_resample_per_dataset")
+    cd_diagram(mean, FIGS / "v2_resample_cd.pdf")
 
 
 def section_proba():
@@ -212,19 +209,19 @@ def section_proba():
     table["mean_rank_accuracy"] = mean_ranks(per["accuracy"].loc[keep]).values
     table["mean_rank_log_loss"] = per["log_loss"].loc[keep].rank(axis=1, ascending=True, method="average").mean().values
     table = table.sort_values("mean_rank_accuracy")
-    to_md(table, TABLES / "v3_proba_overview")
+    to_md(table, TABLES / "v2_proba_overview")
     summary["proba_overview"] = table.to_dict(orient="records")
     t = comparison_table(per["log_loss"].loc[keep], PLANNED_PROBA_LOGLOSS, higher_is_better=False)
     if not t.empty:
         t = t.rename(columns={"mean_diff_pp": "mean_diff_x100", "gain_>1pp": "better_>0.01", "loss_>1pp": "worse_>0.01"})
-        to_md(t, TABLES / "v3_proba_planned_logloss", floatfmt=".2f")
+        to_md(t, TABLES / "v2_proba_planned_logloss", floatfmt=".2f")
         summary["proba_planned_logloss"] = t.to_dict(orient="records")
     t = comparison_table(per["auroc"].loc[keep], PLANNED_PROBA_AUROC)
     if not t.empty:
-        to_md(t, TABLES / "v3_proba_planned_auroc", floatfmt=".2f")
+        to_md(t, TABLES / "v2_proba_planned_auroc", floatfmt=".2f")
         summary["proba_planned_auroc"] = t.to_dict(orient="records")
-    to_md(per["log_loss"].loc[keep].reset_index(), TABLES / "v3_proba_log_loss_per_dataset")
-    to_md(per["auroc"].loc[keep].reset_index(), TABLES / "v3_proba_auroc_per_dataset")
+    to_md(per["log_loss"].loc[keep].reset_index(), TABLES / "v2_proba_log_loss_per_dataset")
+    to_md(per["auroc"].loc[keep].reset_index(), TABLES / "v2_proba_auroc_per_dataset")
 
 
 def main():
@@ -234,7 +231,7 @@ def main():
     section_channels()
     section_resample()
     section_proba()
-    out = RESULTS_DIR / "v3_summary.json"
+    out = RESULTS_DIR / "v2_summary.json"
     out.write_text(json.dumps(summary, indent=2, default=float), encoding="utf-8")
     print(f"\nwrote {out}")
 

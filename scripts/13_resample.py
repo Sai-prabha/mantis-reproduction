@@ -1,23 +1,9 @@
-"""Evaluation upgrade: stratified train/test resamples (lecture week 7 slide 12,
-week 9 slide 4; 30 resamples in the bake-off redux).
+"""Stratified train/test resamples (resample 0 is the official split).
 
-The official split is one draw. Here the train and test cases of a dataset are
-pooled and re-split --resamples times with scikit-learn's StratifiedShuffleSplit
-(same train and test sizes as the official split; resample 0 = the official
-split). Frozen embeddings, window embeddings and statistics are per-series, so
-they are only re-indexed; MiniRocket's biases and every head are refitted on
-each training part, so nothing is fitted on test data.
-
-Methods (features:head), same definitions as 07_fusion.py and 11_multiscale.py:
-  M:RF200   M:ridge   R:ridge   R+M:ridge          default
-  M+W2mean:RF200   M+W2mean:ridge                  windowed Mantis (W<k><mean|concat>)
-  M+S:ridge                                        statistics block
-R needs MiniRocket refits, which is the expensive part. Window embeddings come
-from the cache written by 11_multiscale.py (same --overlap), or are computed.
-
-Results: results/resample.csv, one row per dataset, resample, features, head.
-Report: scripts/15_improve_report.py (mean +- std over resamples per dataset,
-then the usual paired tests on the per-dataset means).
+Train and test are pooled and re-split with StratifiedShuffleSplit at the
+official sizes. Embeddings are re-indexed; MiniRocket and every head are refitted
+on each training part. Methods use the features:head format of scripts 07 and 11.
+Writes results/resample.csv. Report: scripts/15_report.py.
 
 Usage
   python scripts/13_resample.py --datasets ucr --resamples 10
@@ -151,7 +137,7 @@ def main():
             if len(np.unique(ytr)) < 2:
                 print(f"[skip] {name} resample {r}: one class in the training part")
                 continue
-            # embeddings and statistics are per series so they are only re-indexed; MiniRocket is refitted below
+            # per-series features are re-indexed; MiniRocket is refitted below
             blocks = {"M": (M_all[tr], M_all[te])}
             for spec, W in W_all.items():
                 blocks[spec] = (W[tr], W[te])

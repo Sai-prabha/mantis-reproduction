@@ -1,23 +1,9 @@
-"""Improvement: channel reduction before the encoder (src/channels.py).
+"""Channel reduction before the encoder, for datasets with more than --min-channels (8).
 
-Question: Mantis embeds each channel separately, so cost and feature count grow
-with the channel count. If a multivariate series is first reduced to k channels
-with a standard method (PCA fitted on the training series, a random channel
-subset, or summary channels), how much accuracy is lost and how much time saved?
-
-Datasets: those with more than --min-channels channels (default 8), fixed from
-metadata before any result is seen.
-
-Methods (k = --k, default 8):
-  full        all channels, the published embedding (cached by 02_zero_shot.py)
-  pca{k}      StandardScaler + PCA over channels, fitted on train only
-  random{k}   k channels chosen at random (seeded)
-  summary     3 derived channels: L2 magnitude, mean, std across channels
-  magnitude   1 derived channel: L2 magnitude
-Heads: RF200 and ridge. The forward-pass time of the reduced input is measured
-here; the full input's time comes from the embedding cache.
-
-Results: results/channel_reduce.csv. Report: scripts/15_improve_report.py.
+Methods: full (all channels), pca{k} (fitted on train), random{k} (seeded),
+summary (magnitude, mean, std across channels) and magnitude. Heads: RF200 and
+ridge. Encoder time of the reduced input is measured here.
+Writes results/channel_reduce.csv. Report: scripts/15_report.py.
 
 Usage
   python scripts/12_channel_reduce.py --datasets uea,others
@@ -56,12 +42,14 @@ def resolve_groups(selection: str) -> list[str]:
 
 
 def reduced_embeddings(name, method, k, seed, data, device, batch_size, net):
+    # only random depends on the seed, so PCA and the summaries are embedded once
+    seed = seed if method == "random" else 0
     tag = f"mantis8m_rev-{CHECKPOINT_REVISION or 'latest'}_{method}{k}_s{seed}"
     path = CACHE_DIR / "emb" / "channels" / tag / f"{name}.npz"
     if path.exists():
         z = np.load(path)
         return z["Z_train"], z["Z_test"], float(z["seconds"]), int(z["k_used"])
-    # anything fitted (PCA) uses the training series only
+    # PCA is fitted on the training series only
     Xtr, Xte = reduce_channels(method, data["X_train"], data["X_test"], k, seed)
     Ztr, t1 = embed(net, Xtr, device, batch_size)
     Zte, t2 = embed(net, Xte, device, batch_size)

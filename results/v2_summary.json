@@ -1,0 +1,417 @@
+{
+  "multiscale_friedman": {
+    "chi2": 75.06077707835904,
+    "p": 4.629942453685538e-12,
+    "k": 11,
+    "n": 44
+  },
+  "multiscale_overview": [
+    {
+      "method": "M+W2concat (ridge)",
+      "mean_rank": 4.375,
+      "mean_accuracy": 0.768659007555151,
+      "datasets": 44,
+      "embed_minutes": 32.96866666666667,
+      "median_features": 768.0
+    },
+    {
+      "method": "M+W2mean (ridge)",
+      "mean_rank": 4.6477272727272725,
+      "mean_accuracy": 0.7710378516729364,
+      "datasets": 44,
+      "embed_minutes": 32.96866666666667,
+      "median_features": 512.0
+    },
+    {
+      "method": "M+W4mean (ridge)",
+      "mean_rank": 4.715909090909091,
+      "mean_accuracy": 0.7752027698639036,
+      "datasets": 44,
+      "embed_minutes": 49.317216666666674,
+      "median_features": 512.0
+    },
+    {
+      "method": "MiniRocket (ridge)",
+      "mean_rank": 4.738636363636363,
+      "mean_accuracy": 0.7890919320539264,
+      "datasets": 44,
+      "embed_minutes": NaN,
+      "median_features": NaN
+    },
+    {
+      "method": "M+W4concat (ridge)",
+      "mean_rank": 4.829545454545454,
+      "mean_accuracy": 0.7700079222807473,
+      "datasets": 44,
+      "embed_minutes": 49.317216666666674,
+      "median_features": 1280.0
+    },
+    {
+      "method": "M+W2mean (RF200)",
+      "mean_rank": 6.784090909090909,
+      "mean_accuracy": 0.7442506199686757,
+      "datasets": 44,
+      "embed_minutes": 32.96866666666667,
+      "median_features": 512.0
+    },
+    {
+      "method": "M+W2concat (RF200)",
+      "mean_rank": 6.818181818181818,
+      "mean_accuracy": 0.7455005951719685,
+      "datasets": 44,
+      "embed_minutes": 32.96866666666667,
+      "median_features": 768.0
+    },
+    {
+      "method": "M+W4concat (RF200)",
+      "mean_rank": 6.829545454545454,
+      "mean_accuracy": 0.7501792215803728,
+      "datasets": 44,
+      "embed_minutes": 49.317216666666674,
+      "median_features": 1280.0
+    },
+    {
+      "method": "M+W4mean (RF200)",
+      "mean_rank": 6.988636363636363,
+      "mean_accuracy": 0.7481220831798137,
+      "datasets": 44,
+      "embed_minutes": 49.317216666666674,
+      "median_features": 512.0
+    },
+    {
+      "method": "M (ridge)",
+      "mean_rank": 7.1477272727272725,
+      "mean_accuracy": 0.744741574519595,
+      "datasets": 44,
+      "embed_minutes": 16.01236666666667,
+      "median_features": 256.0
+    },
+    {
+      "method": "M (RF200)",
+      "mean_rank": 8.125,
+      "mean_accuracy": 0.7279054184577763,
+      "datasets": 44,
+      "embed_minutes": 16.01236666666667,
+      "median_features": 256.0
+    }
+  ],
+  "multiscale_planned": [
+    {
+      "comparison": "M+W2mean (RF200) vs M (RF200)",
+      "question": "Do two windows help the paper's head?",
+      "n": 44,
+      "mean_diff_pp": 1.6345201510899212,
+      "wins": 32,
+      "ties": 2,
+      "losses": 10,
+      "gain_>1pp": 27,
+      "loss_>1pp": 8,
+      "p": "<0.001",
+      "p_holm": "0.004"
+    },
+    {
+      "comparison": "M+W2mean (ridge) vs M (ridge)",
+      "question": "Do two windows help a ridge head?",
+      "n": 44,
+      "mean_diff_pp": 2.6296277153341463,
+      "wins": 34,
+      "ties": 3,
+      "losses": 7,
+      "gain_>1pp": 30,
+      "loss_>1pp": 6,
+      "p": "<0.001",
+      "p_holm": "<0.001"
+    },
+    {
+      "comparison": "M+W2concat (RF200) vs M+W2mean (RF200)",
+      "question": "Concatenate or average the windows?",
+      "n": 44,
+      "mean_diff_pp": 0.12499752032930621,
+      "wins": 23,
+      "ties": 2,
+      "losses": 19,
+      "gain_>1pp": 12,
+      "loss_>1pp": 10,
+      "p": "0.503",
+      "p_holm": "1.000"
+    },
+    {
+      "comparison": "M+W4mean (RF200) vs M+W2mean (RF200)",
+      "question": "Do four windows beat two?",
+      "n": 44,
+      "mean_diff_pp": 0.3871463211137956,
+      "wins": 23,
+      "ties": 3,
+      "losses": 18,
+      "gain_>1pp": 16,
+      "loss_>1pp": 12,
+      "p": "0.720",
+      "p_holm": "1.000"
+    },
+    {
+      "comparison": "M+W2mean (ridge) vs MiniRocket (ridge)",
+      "question": "Does windowed Mantis close the gap to MiniRocket?",
+      "n": 44,
+      "mean_diff_pp": -1.8054080380989836,
+      "wins": 18,
+      "ties": 2,
+      "losses": 24,
+      "gain_>1pp": 12,
+      "loss_>1pp": 19,
+      "p": "0.409",
+      "p_holm": "1.000"
+    }
+  ],
+  "channels_friedman": {
+    "chi2": 49.01953124999999,
+    "p": 1.645881509527547e-07,
+    "k": 10,
+    "n": 14
+  },
+  "channels_overview": [
+    {
+      "method": "full (ridge)",
+      "mean_rank": 2.4642857142857144,
+      "mean_accuracy": 0.7110221428232356,
+      "datasets": 14,
+      "embed_seconds_total": 24656.081,
+      "speedup_vs_full": 1.0,
+      "max_feature_mb": 828.281
+    },
+    {
+      "method": "full (RF200)",
+      "mean_rank": 4.035714285714286,
+      "mean_accuracy": 0.6880026260246069,
+      "datasets": 14,
+      "embed_seconds_total": 24656.081,
+      "speedup_vs_full": 1.0,
+      "max_feature_mb": 828.281
+    },
+    {
+      "method": "random8 (ridge)",
+      "mean_rank": 4.107142857142857,
+      "mean_accuracy": 0.6652115407883252,
+      "datasets": 14,
+      "embed_seconds_total": 2266.0913333333333,
+      "speedup_vs_full": 10.880444506943968,
+      "max_feature_mb": 51.555
+    },
+    {
+      "method": "pca8 (ridge)",
+      "mean_rank": 4.392857142857143,
+      "mean_accuracy": 0.6645556079280238,
+      "datasets": 14,
+      "embed_seconds_total": 2267.763,
+      "speedup_vs_full": 10.87242405842233,
+      "max_feature_mb": 51.555
+    },
+    {
+      "method": "pca8 (RF200)",
+      "mean_rank": 5.285714285714286,
+      "mean_accuracy": 0.6486959270365746,
+      "datasets": 14,
+      "embed_seconds_total": 2267.763,
+      "speedup_vs_full": 10.87242405842233,
+      "max_feature_mb": 51.555
+    },
+    {
+      "method": "random8 (RF200)",
+      "mean_rank": 5.428571428571429,
+      "mean_accuracy": 0.6540769204923659,
+      "datasets": 14,
+      "embed_seconds_total": 2266.020666666667,
+      "speedup_vs_full": 10.880783817505636,
+      "max_feature_mb": 51.555
+    },
+    {
+      "method": "summary (ridge)",
+      "mean_rank": 6.142857142857143,
+      "mean_accuracy": 0.6075762800548132,
+      "datasets": 14,
+      "embed_seconds_total": 826.7506666666667,
+      "speedup_vs_full": 29.822874046669448,
+      "max_feature_mb": 19.333
+    },
+    {
+      "method": "summary (RF200)",
+      "mean_rank": 6.785714285714286,
+      "mean_accuracy": 0.5963163887480991,
+      "datasets": 14,
+      "embed_seconds_total": 826.7813333333334,
+      "speedup_vs_full": 29.821767867682865,
+      "max_feature_mb": 19.333
+    },
+    {
+      "method": "magnitude (ridge)",
+      "mean_rank": 7.464285714285714,
+      "mean_accuracy": 0.5562005973663342,
+      "datasets": 14,
+      "embed_seconds_total": 311.0696666666667,
+      "speedup_vs_full": 79.26224779229517,
+      "max_feature_mb": 6.444
+    },
+    {
+      "method": "magnitude (RF200)",
+      "mean_rank": 8.892857142857142,
+      "mean_accuracy": 0.5312935261696262,
+      "datasets": 14,
+      "embed_seconds_total": 311.0566666666667,
+      "speedup_vs_full": 79.26556040164171,
+      "max_feature_mb": 6.444
+    }
+  ],
+  "channels_planned": [
+    {
+      "comparison": "pca8 (ridge) vs full (ridge)",
+      "question": "PCA to 8 channels vs all channels",
+      "n": 14,
+      "mean_diff_pp": -4.646653489521188,
+      "wins": 4,
+      "ties": 0,
+      "losses": 10,
+      "gain_>1pp": 4,
+      "loss_>1pp": 7,
+      "p": "0.268",
+      "p_holm": "0.535"
+    },
+    {
+      "comparison": "random8 (ridge) vs full (ridge)",
+      "question": "Random 8 channels vs all channels",
+      "n": 14,
+      "mean_diff_pp": -4.581060203491054,
+      "wins": 1,
+      "ties": 1,
+      "losses": 12,
+      "gain_>1pp": 1,
+      "loss_>1pp": 9,
+      "p": "0.002",
+      "p_holm": "0.007"
+    },
+    {
+      "comparison": "summary (ridge) vs full (ridge)",
+      "question": "Three summary channels vs all channels",
+      "n": 14,
+      "mean_diff_pp": -10.344586276842229,
+      "wins": 2,
+      "ties": 0,
+      "losses": 12,
+      "gain_>1pp": 2,
+      "loss_>1pp": 11,
+      "p": "0.002",
+      "p_holm": "0.007"
+    },
+    {
+      "comparison": "pca8 (ridge) vs random8 (ridge)",
+      "question": "Is PCA better than a random subset?",
+      "n": 14,
+      "mean_diff_pp": -0.0655932860301346,
+      "wins": 8,
+      "ties": 0,
+      "losses": 6,
+      "gain_>1pp": 4,
+      "loss_>1pp": 3,
+      "p": "1.000",
+      "p_holm": "1.000"
+    }
+  ],
+  "resample_overview": [
+    {
+      "method": "M+W2mean (ridge)",
+      "mean_rank": 2.0681818181818183,
+      "mean_accuracy": 0.7850382927110165,
+      "accuracy_official_split": 0.7710378516729364,
+      "mean_std_over_resamples": 0.022056545261701824,
+      "resamples": 10
+    },
+    {
+      "method": "R (ridge)",
+      "mean_rank": 2.1818181818181817,
+      "mean_accuracy": 0.8127138874232375,
+      "accuracy_official_split": 0.789643991592916,
+      "mean_std_over_resamples": 0.023586250459236457,
+      "resamples": 10
+    },
+    {
+      "method": "M+W2mean (RF200)",
+      "mean_rank": 3.0568181818181817,
+      "mean_accuracy": 0.7654235371461543,
+      "accuracy_official_split": 0.7459153465986931,
+      "mean_std_over_resamples": 0.02594848906596766,
+      "resamples": 10
+    },
+    {
+      "method": "M (ridge)",
+      "mean_rank": 3.647727272727273,
+      "mean_accuracy": 0.7602349198191448,
+      "accuracy_official_split": 0.744741574519595,
+      "mean_std_over_resamples": 0.023036179732494458,
+      "resamples": 10
+    },
+    {
+      "method": "M (RF200)",
+      "mean_rank": 4.045454545454546,
+      "mean_accuracy": 0.7453042392044338,
+      "accuracy_official_split": 0.7269271873404427,
+      "mean_std_over_resamples": 0.02552243415164573,
+      "resamples": 10
+    }
+  ],
+  "resample_planned": [
+    {
+      "comparison": "M (ridge) vs M (RF200)",
+      "question": "Ridge vs RF head, over resamples",
+      "n": 44,
+      "mean_diff_pp": 1.493068061471096,
+      "wins": 24,
+      "ties": 2,
+      "losses": 18,
+      "gain_>1pp": 19,
+      "loss_>1pp": 11,
+      "p": "0.087",
+      "p_holm": "0.162",
+      "datasets_gap_below_1std": 22.0
+    },
+    {
+      "comparison": "M+W2mean (ridge) vs M (ridge)",
+      "question": "Do two windows help a ridge head, over resamples?",
+      "n": 44,
+      "mean_diff_pp": 2.480337289187182,
+      "wins": 39,
+      "ties": 2,
+      "losses": 3,
+      "gain_>1pp": 35,
+      "loss_>1pp": 2,
+      "p": "<0.001",
+      "p_holm": "<0.001",
+      "datasets_gap_below_1std": 17.0
+    },
+    {
+      "comparison": "M+W2mean (RF200) vs M (RF200)",
+      "question": "Do two windows help the paper's head, over resamples?",
+      "n": 44,
+      "mean_diff_pp": 2.011929794172051,
+      "wins": 35,
+      "ties": 2,
+      "losses": 7,
+      "gain_>1pp": 24,
+      "loss_>1pp": 3,
+      "p": "<0.001",
+      "p_holm": "<0.001",
+      "datasets_gap_below_1std": 25.0
+    },
+    {
+      "comparison": "M+W2mean (ridge) vs R (ridge)",
+      "question": "Does windowed Mantis match MiniRocket, over resamples?",
+      "n": 44,
+      "mean_diff_pp": -2.7675594712221083,
+      "wins": 17,
+      "ties": 1,
+      "losses": 26,
+      "gain_>1pp": 12,
+      "loss_>1pp": 19,
+      "p": "0.081",
+      "p_holm": "0.162",
+      "datasets_gap_below_1std": 15.0
+    }
+  ]
+}

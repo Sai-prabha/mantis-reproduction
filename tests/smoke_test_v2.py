@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-tmp = Path(tempfile.mkdtemp(prefix="mantis_smoke_v3_"))
+tmp = Path(tempfile.mkdtemp(prefix="mantis_smoke_v2_"))
 os.environ["MANTIS_RESULTS_DIR"] = str(tmp / "results")
 os.environ["MANTIS_CACHE_DIR"] = str(tmp / "cache")
 os.environ["MANTIS_DATA_DIR"] = str(tmp / "data")
@@ -65,5 +65,5 @@ run("13_resample.py", "--datasets", names, "--resamples", "3", "--device", "cpu"
 run("13_resample.py", "--datasets", names, "--resamples", "3", "--device", "cpu", "--min-len", "512",
     "--methods", "M:RF200,M:ridge,R:ridge,M+W2mean:RF200,M+W2mean:ridge")
 run("14_proba_metrics.py", "--datasets", names, "--seeds", "0", "--device", "cpu")
-run("15_improve_report.py")
+run("15_report.py")
 print(f"\nSmoke test passed. Outputs in {tmp}")

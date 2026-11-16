@@ -1,6 +1,0 @@
-| comparison                    | question                                               |   n |   mean_diff_pp |   wins |   ties |   losses |   gain_>1pp |   loss_>1pp |    p |   p_holm |   datasets_gap_below_1std |
-|:------------------------------|:-------------------------------------------------------|----:|---------------:|-------:|-------:|---------:|------------:|------------:|-----:|---------:|--------------------------:|
-| M (ridge) vs M (RF200)        | Ridge vs RF head, over resamples                       |   4 |           0.37 |      3 |      0 |        1 |           3 |           1 | 0.88 |     0.88 |                      0.00 |
-| M+W2mean (ridge) vs M (ridge) | Do two windows help a ridge head, over resamples?      |   4 |           2.35 |      4 |      0 |        0 |           3 |           0 | 0.12 |     0.50 |                      3.00 |
-| M+W2mean (RF200) vs M (RF200) | Do two windows help the paper's head, over resamples?  |   4 |           2.61 |      4 |      0 |        0 |           3 |           0 | 0.12 |     0.50 |                      3.00 |
-| M+W2mean (ridge) vs R (ridge) | Does windowed Mantis match MiniRocket, over resamples? |   4 |          -7.25 |      0 |      0 |        4 |           0 |           3 | 0.12 |     0.50 |                      2.00 |

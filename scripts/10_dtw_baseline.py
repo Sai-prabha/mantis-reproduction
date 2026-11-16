@@ -1,12 +1,8 @@
-"""Course baseline (lecture weeks 5 and 7): 1-nearest-neighbour with DTW distance
-and a 10% Sakoe-Chiba warping window, on the same preprocessed input as every
-other method (missing values interpolated, every series resized to 512).
+"""Baseline: 1NN-DTW with a 10% Sakoe-Chiba window, on the same resized input.
 
-1NN-DTW has no random component, so there is one run per dataset (seed 0).
-Its cost grows with n_train x n_test x n_channels x window x length: datasets
-above --max-pairs (n_train x n_test x n_channels) are SKIPPED and listed in
-results/dtw_skipped.csv with the reason, so no skip is silent. The report
-(scripts/08_fusion_report.py) only compares 1NN-DTW on the datasets it completed.
+Deterministic, so one run per dataset. Datasets above --max-pairs
+(n_train x n_test x n_channels) are skipped and listed in results/dtw_skipped.csv.
+Writes results/dtw.csv. Report: scripts/08_fusion_report.py.
 
 Usage
   python scripts/10_dtw_baseline.py --datasets all

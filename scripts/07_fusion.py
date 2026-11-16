@@ -1,36 +1,14 @@
-"""Section 4 improvement: fuse frozen Mantis embeddings with MiniRocket features
-and raw-series statistics (early fusion: concatenate, then one linear classifier).
+"""Fusion: Mantis embeddings (M) with MiniRocket (R) and raw-series statistics (S).
 
-Question: do foundation-model embeddings add information that a strong
-random-kernel method does not already capture, and does restoring the scale
-information that Mantis normalises away fix its failures (e.g. EthanolLevel)?
-
-Feature blocks (see src/features.py):
-  M  Mantis-8M, last layer, CLS token (the cached zero-shot embeddings)
-  S  9 statistics per channel of the raw series and its first difference
-  R  MiniRocket features, fitted on the training set
-
-Methods written to results/fusion.csv (one row per dataset, seed, method):
-  features   classifier   role
-  M          RF200        zero-shot Mantis as in v1 (should equal zero_shot.csv)
-  M+S        RF200        does scale information help Mantis on its own?
-  M          ridge        separates the classifier change from the feature change
-  S          ridge        statistics alone (the course's "stats" baseline)
-  R          ridge        MiniRocket (should match minirocket.csv)
-  M+S        ridge
-  R+S        ridge
-  R+M        ridge        main question: does Mantis add to MiniRocket?
-  R+M+S      ridge        full model
-  none       dummy        majority-class baseline (lecture week 7 checklist)
-
-Ridge = StandardScaler -> equal block weights -> RidgeClassifierCV (alpha by
-leave-one-out CV on train). Same input as every other script: missing values
-interpolated, series resized to 512. Official train/test splits; the seed
-changes MiniRocket's biases and the random forest. Times are wall-clock.
+Does M add to MiniRocket, and do the statistics restore the scale that Mantis
+normalises away? Blocks are concatenated and fed to one classifier.
+Methods: M and M+S with RF200; M, S, R, M+S, R+S, R+M, R+M+S with ridge;
+a majority-class dummy. Ridge = StandardScaler, equal block weights,
+RidgeClassifierCV (alpha by leave-one-out on train).
+Writes results/fusion.csv. Report: scripts/08_fusion_report.py.
 
 Usage
   python scripts/07_fusion.py --datasets all
-  python scripts/07_fusion.py --datasets tier1 --seeds 0
   python scripts/07_fusion.py --datasets ucr --methods R+M:ridge,R:ridge
 """
 import argparse

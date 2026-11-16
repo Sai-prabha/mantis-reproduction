@@ -1,19 +1,8 @@
-"""Evaluation upgrade: probability-based metrics (lecture week 8; week 9 slide 24).
+"""Probability metrics: accuracy, balanced accuracy, macro F1, AUROC, log loss, ECE.
 
-Accuracy alone hides how useful a model's probabilities are. v1 sells Mantis as
-"calibrated", and a ridge head (MiniRocket's default, and the fusion head in
-07_fusion.py) gives no probabilities at all. This script fits heads that DO
-output probabilities and reports, per dataset:
-  accuracy, balanced accuracy, macro F1, AUROC (one-vs-rest, macro),
-  log loss, ECE (10 bins, src/calibration.py)
-
-Heads
-  RF200    the paper's random forest, on M only
-  logreg   StandardScaler -> block weights -> LogisticRegression (C = 1, the
-           scikit-learn default; nothing tuned on test), on M, R and R+M
-Features: M = frozen Mantis embedding (cached), R = MiniRocket (fitted on train).
-
-Results: results/proba.csv. Report: scripts/15_improve_report.py.
+Ridge gives no probabilities, so the heads are RF200 (on M) and logistic
+regression (scaler, block weights, C = 1; on M, R and R+M).
+Writes results/proba.csv. Report: scripts/15_report.py.
 
 Usage
   python scripts/14_proba_metrics.py --datasets all
@@ -61,7 +50,8 @@ def parse_methods(text: str | None) -> list[tuple[str, str]]:
 def full_proba(clf, X: np.ndarray, n_classes: int) -> np.ndarray:
     p = np.zeros((len(X), n_classes), dtype=np.float64)
     p[:, np.asarray(clf.classes_, dtype=int)] = clf.predict_proba(X)
-    return p
+    # float32 rows miss 1 by ~1e-7, which log_loss flags; renormalise in float64
+    return p / p.sum(axis=1, keepdims=True)
 
 
 def proba_metrics(proba: np.ndarray, y: np.ndarray) -> dict:

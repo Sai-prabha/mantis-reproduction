@@ -1,22 +1,9 @@
-"""Tables and figures for the Section 4 fusion experiment (results/fusion.csv).
+"""Tables and figures for the fusion experiment (results/fusion.csv, script 07).
 
-Follows the evaluation checklist of lecture weeks 7 to 9:
-  * per-dataset score table for every method (mean over seeds)
-  * ranks: average rank over datasets is the headline, not average accuracy
-  * Friedman test across all methods, then a critical difference (CD) diagram
-    (aeon: one-sided Wilcoxon tests, Holm correction) for the key methods
-  * planned pairwise comparisons, fixed before the results were seen,
-    two-sided Wilcoxon signed-rank tests over datasets with a Holm correction
-  * post hoc comparisons (added after seeing results), reported separately, own Holm family
-  * if results/stats_ablation.csv exists: each statistics subset vs Mantis alone (09)
-  * if results/dtw.csv exists: the overview again with 1NN-DTW on the datasets it completed (10)
-  * a one-row multiple comparison matrix (MCM): full model vs every other method
-  * practical significance: datasets with a gain or loss above 1 point
-  * groups defined in advance from metadata (length, channels, classes, train size)
-  * cost: run time and feature-matrix size; accuracy-vs-runtime figure
-  * sanity checks: our MiniRocket and Mantis (RF) rows against 04 and 02
-
-Only datasets on which every method finished are compared; the rest are listed.
+Mean ranks, Friedman test and CD diagram; planned and post hoc Wilcoxon tests in
+separate Holm families; cost tables; groups fixed from metadata. Adds the
+statistics ablation (09) and 1NN-DTW (10) when their CSVs exist. Only datasets
+where every method finished are compared.
 
 Usage
   python scripts/08_fusion_report.py
@@ -205,8 +192,7 @@ def post_hoc(acc):
 
 
 def stats_ablation(df):
-    """Mantis + one statistics subset vs Mantis alone (results/stats_ablation.csv against the
-    M rows of fusion.csv), per classifier. Exploratory: one Holm family for this table."""
+    """Mantis + one statistics group vs Mantis alone, per classifier (own Holm family)."""
     path = RESULTS_DIR / "stats_ablation.csv"
     if not path.exists():
         return

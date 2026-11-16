@@ -1,18 +1,9 @@
-"""Section 4 ablation: which of the 9 raw-series statistics carry the gain for Mantis?
+"""Ablation: which statistics group carries the Mantis + S gain?
 
-The fusion experiment showed that adding the statistics block S to the frozen
-Mantis embedding helps (Mantis+Stats vs Mantis). S has three kinds of column:
-level and spread of the raw series, its slope, and statistics of its first
-difference. This script runs Mantis + one group at a time, under both
-classifiers of the headline table (the paper's RF and the ridge). The Mantis-only
-baseline is NOT recomputed: results/fusion.csv already holds it with the same
-seeds, cached embeddings and random_state, so only the column subset differs.
-Tables: scripts/08_fusion_report.py (section "stats_ablation").
-
-Added after the fusion results were seen; the report labels it as exploratory.
-
-Rows written to results/stats_ablation.csv (one per dataset, seed, subset, classifier):
-  subset   level | slope | diff | all     classifier   RF200 | ridge
+Adds one group at a time to M (level, slope, diff, all) with RF200 and ridge.
+The M-only baseline comes from results/fusion.csv (same seeds and cache).
+Exploratory: added after the fusion results were seen.
+Writes results/stats_ablation.csv. Report: scripts/08_fusion_report.py.
 
 Usage
   python scripts/09_stats_ablation.py --datasets all

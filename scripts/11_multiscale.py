@@ -1,27 +1,12 @@
-"""Improvement: multi-scale (windowed) embeddings for long series (src/windows.py).
+"""Multi-scale window embeddings for series longer than --min-len (default 512).
 
-Question: the published protocol resizes every series to 512 points. For
-series longer than that, does embedding k windows of the RAW series as well
-(each resized to 512, same frozen encoder) recover the lost detail?
-
-Datasets: those whose raw series are longer than --min-len (default 512, i.e.
-every dataset that the resize downsamples). The group is defined from metadata
-before any result is seen (lecture week 9).
-
-Feature sets (M = published whole-series embedding, cached by 02_zero_shot.py):
-  M            baseline, as in v1
-  M+W{k}mean   M next to the mean of the k window embeddings      (same width as 2 x M)
-  M+W{k}concat M next to the k window embeddings side by side      (width (k + 1) x M)
-Heads: RF200 (the paper's) and ridge (StandardScaler -> block weights ->
-RidgeClassifierCV, as in 07_fusion.py). Official train/test splits; the seed
-changes the forest only, the encoder is deterministic.
-
-Results: results/multiscale.csv, one row per dataset, seed, features, head.
-Report: scripts/15_improve_report.py.
+Each of k raw windows is resized to 512 and embedded with the same frozen
+encoder, then averaged (M+W{k}mean) or concatenated (M+W{k}concat) next to the
+published embedding M. Heads: RF200 and ridge. The seed only changes the forest.
+Writes results/multiscale.csv. Report: scripts/15_report.py.
 
 Usage
-  python scripts/11_multiscale.py --datasets all
-  python scripts/11_multiscale.py --datasets all --windows 2 4 --overlap 0.5
+  python scripts/11_multiscale.py --datasets all --windows 2 4
   python scripts/11_multiscale.py --datasets ACSF1,Rock --seeds 0
 """
 import argparse
@@ -100,7 +85,7 @@ def main():
         if meta["max_len"] <= args.min_len:
             continue
         try:
-            # published embedding is cached; window embeddings are cached per (k, overlap)
+            # window embeddings are cached per (k, overlap)
             Mtr, Mte, m_secs, _ = cached_embeddings(name, data, device, batch_size=args.batch_size)
             blocks = {"M": (Mtr, Mte, m_secs)}
             for k in args.windows:

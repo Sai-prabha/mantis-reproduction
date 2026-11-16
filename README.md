@@ -21,7 +21,8 @@ scikit-learn and aeon components only.
 | Pretraining benefit | Full fine-tuning beats training from scratch by +6.35 pp (paper +5.14 pp) |
 | Against MOMENT | Mantis is +1.78 pp better zero-shot (p = 0.018) and embeds about 42 times faster |
 | Against a non-foundation baseline | MiniRocket beats zero-shot Mantis, 0.8378 vs 0.7821 on 158 datasets, in about 11 minutes of CPU time |
-| Improvement | Embedding raw windows of long series next to the published embedding gains +1.6 to +2.6 pp on 44 long datasets (Holm p below 0.01). It does not close the gap to MiniRocket |
+| Improvement | Embedding raw windows of long series next to the published embedding gains +1.6 to +2.6 pp on 44 long datasets (Holm p below 0.01), and the gain holds over 10 stratified resamples. It does not close the gap to MiniRocket |
+| Channel reduction | On 14 datasets with more than 8 channels, reducing to 8 channels makes the encoder about 11 times faster and costs about 4.6 pp. PCA is no better than a random channel subset |
 
 Details, tests and caveats are in sections 4 and 6.
 
@@ -155,7 +156,7 @@ are collected in `results/tables/report_numbers.md`.
 | Section III-C, package defaults | `03_finetune.py ... --package-defaults`, then `06_summarise.py` | `results/tables/report_numbers.md` |
 | Section III-E, calibration | `03_finetune.py` (tier1 and tier2), then `06_summarise.py` | `results/tables/calibration.md`, `report_numbers.md`, `results/summary.json` |
 | Section III-F, MPS against CPU | `01_check_and_benchmark.py` | `results/check_and_benchmark.json` |
-| Improvements (section 6) | see the table in section 6.4 | `results/tables/fusion_*.md`, `v3_*.md` |
+| Improvements (section 6) | see the table in section 6.5 | `results/tables/fusion_*.md`, `v2_*.md` |
 
 ## 4. Results: ours vs the paper
 
@@ -287,22 +288,73 @@ the number of windows do not matter. Windowed Mantis does not close the gap to
 MiniRocket. Two windows roughly double the encoder time and four windows
 roughly triple it. The ridge head and the encoder are deterministic, so the
 three seeds give identical ridge results and these numbers rest on the single
-official split. Script 13 below addresses that.
+official split. Script 13 repeats the comparison over ten stratified train/test
+resamples, and the gain holds:
 
-### 6.3 Further experiments and evaluation upgrades (scripts 12 to 14)
+| Over 10 resamples (44 datasets) | Mean diff | W/T/L | Holm p |
+|---|---:|---|---:|
+| 2 windows vs plain Mantis, ridge head | +2.48 pp | 39/2/3 | below 0.001 |
+| 2 windows vs plain Mantis, paper's RF head | +2.01 pp | 35/2/7 | below 0.001 |
+| 2 windows (ridge) vs MiniRocket | -2.77 pp | 17/1/26 | 0.162 |
+
+A single method's accuracy moves by 2.2 to 2.6 pp between resamples
+(`results/tables/v2_resample_overview.md`).
+
+### 6.3 Channel reduction before the encoder (script 12)
+
+Question: Mantis embeds every channel separately, so encoder time and feature
+count grow with the number of channels. How much accuracy is lost if a
+multivariate series is first reduced to a few channels with a standard method?
+The group is the 14 datasets with more than 8 channels (9 to 1,345), fixed from
+the metadata. Methods: all channels (the published embedding); PCA to 8
+channels (StandardScaler and PCA over channels, fitted on the training series
+only); 8 channels drawn at random (seeded); three summary channels (L2
+magnitude, mean and standard deviation across channels); and the magnitude
+alone. Encoder time is measured on the same CPU for every input.
+
+| Method, ridge head (14 datasets) | Mean accuracy | Mean rank | Encoder speed-up |
+|---|---:|---:|---:|
+| All channels | 0.7110 | 2.46 | 1× |
+| Random 8 channels | 0.6652 | 4.11 | 10.9× |
+| PCA to 8 channels | 0.6646 | 4.39 | 10.9× |
+| Three summary channels | 0.6076 | 6.14 | 29.8× |
+| Magnitude only | 0.5562 | 7.46 | 79.3× |
+
+Friedman test over all 10 methods (5 inputs, RF and ridge heads): chi-squared
+49.02, p below 0.001.
+
+| Planned comparison, ridge head | Mean diff | W/T/L | Holm p |
+|---|---:|---|---:|
+| PCA to 8 vs all channels | -4.65 pp | 4/0/10 | 0.54 |
+| Random 8 vs all channels | -4.58 pp | 1/1/12 | 0.01 |
+| Three summary channels vs all channels | -10.34 pp | 2/0/12 | 0.01 |
+| PCA to 8 vs random 8 | -0.07 pp | 8/0/6 | 1.00 |
+
+Reading: reducing to 8 channels makes the encoder about 11 times faster and
+costs about 4.6 pp on average. PCA picks no better input than a random subset:
+PCA keeps the directions of largest shared variance, which need not be the ones
+that separate the classes. Most of the loss sits on InsectWingbeat (-43 pp
+with PCA) and PEMS-SF (-16 pp), where the information is spread over hundreds
+of channels. PCA's mean loss is not significant because
+it also wins on four datasets (DuckDuckGeese +8.0 pp, HandMovementDirection
++5.4 pp, MotorImagery +3.0 pp, FingerMovements +2.0 pp). The ridge head beats
+the forest for every input. The summary channels are computed on unscaled
+channels, so the channel with the widest range dominates them; a scaled
+variant was not tested.
+
+### 6.4 Further evaluation upgrades (scripts 13 and 14)
 
 | Script | What it tests |
 |---|---|
-| `12_channel_reduce.py` | Channel reduction before the encoder for datasets with more than 8 channels: PCA fitted on the training series, a random channel subset, or summary channels (magnitude, mean, standard deviation). Accuracy against encoder time. |
 | `13_resample.py` | Stratified train/test resamples (resample 0 is the official split). Reports the spread over resamples for Mantis, MiniRocket, their fusion and windowed Mantis. Use `--min-len 512` for the windowed group. |
 | `14_proba_metrics.py` | AUROC, log loss, macro F1 and ECE for heads that output probabilities (the paper's RF and a logistic head) on Mantis, MiniRocket and both. |
 
-Results for these three are written by script 15 to `results/tables/v3_*.md`.
+Results for both are written by script 15 to `results/tables/v2_*.md`.
 Do not quote them from a partial run: each script logs the datasets it has
 finished, and the report tables include only datasets where every compared
 method has finished.
 
-### 6.4 Commands for the improvements
+### 6.5 Commands for the improvements
 
 Run from the repository root with the `mantis` environment active. Scripts 07
 to 14 need the zero-shot embeddings from `02_zero_shot.py` (cached) and the
@@ -319,19 +371,21 @@ MiniRocket rows of `07_fusion.py` for the report.
 | `python scripts/13_resample.py --datasets all --resamples 10 --min-len 512 --methods M:RF200,M:ridge,R:ridge,M+W2mean:RF200,M+W2mean:ridge` | Resampled evaluation of windowed Mantis |
 | `python scripts/13_resample.py --datasets ucr --resamples 10` | Resampled Mantis, MiniRocket and fusion on all UCR datasets |
 | `python scripts/14_proba_metrics.py --datasets all` | Probability metrics |
-| `python scripts/15_improve_report.py` | Ranks, Friedman tests, planned comparisons with Holm correction, critical difference diagrams, cost tables |
+| `python scripts/15_report.py` | Ranks, Friedman tests, planned comparisons with Holm correction, critical difference diagrams, cost tables |
+| `python scripts/16_report_figures.py` | Report figure: windowed against plain Mantis, one point per dataset |
 
 | Report item | Output |
 |---|---|
 | Fusion overview, planned and post hoc tests, MCM row, groups | `results/tables/fusion_*.md`, `results/figures/fusion_cd.pdf`, `fusion_rank_vs_runtime.pdf`, `results/fusion_summary.json` |
-| Multi-scale tables and critical difference diagram | `results/tables/v3_multiscale_*.md`, `results/figures/v3_multiscale_cd.pdf` |
-| Channel reduction | `results/tables/v3_channels_*.md`, `results/figures/v3_channels_cd.pdf` |
-| Resampling | `results/tables/v3_resample_*.md`, `results/figures/v3_resample_cd.pdf` |
-| Probability metrics | `results/tables/v3_proba_*.md` |
-| All improvement numbers | `results/v3_summary.json` |
+| Multi-scale tables and critical difference diagram | `results/tables/v2_multiscale_*.md`, `results/figures/v2_multiscale_cd.pdf` |
+| Report figure for the window experiment | `results/figures/fig_windows_scatter.pdf` (copied to `report/images/fig_4.pdf`) |
+| Channel reduction | `results/tables/v2_channels_*.md`, `results/figures/v2_channels_cd.pdf` |
+| Resampling | `results/tables/v2_resample_*.md`, `results/figures/v2_resample_cd.pdf` |
+| Probability metrics | `results/tables/v2_proba_*.md` |
+| All improvement numbers | `results/v2_summary.json` |
 
 The planned comparisons for each experiment are listed at the top of
-`scripts/15_improve_report.py` and `scripts/08_fusion_report.py`. Edit them
+`scripts/15_report.py` and `scripts/08_fusion_report.py`. Edit them
 before running a new experiment, not after seeing its results.
 
 ## 7. Tests
@@ -340,9 +394,9 @@ Neither test needs a download or a trained checkpoint.
 
 | Command | What it checks |
 |---|---|
-| `python tests/test_v3_units.py` | Window, channel-reduction and statistics helpers on small arrays |
+| `python tests/test_v2_units.py` | Window, channel-reduction and statistics helpers on small arrays |
 | `python tests/smoke_test.py` | Runs scripts 00 to 10 end to end on synthetic data with a randomly initialised model |
-| `python tests/smoke_test_v3.py` | Runs scripts 11 to 15 end to end on synthetic data |
+| `python tests/smoke_test_v2.py` | Runs scripts 11 to 15 end to end on synthetic data |
 
 The accuracies the smoke tests print are meaningless. They only show that the
 scripts run.
@@ -353,7 +407,7 @@ scripts run.
 configs/datasets.py     dataset lists (UCR-128, UEA-27, others, tier 1, tier 2, unequal)
 src/                    data loading, model helpers, calibration metrics, feature blocks,
                         windows.py, channels.py, stats_utils.py
-scripts/00-15           one script per step above
+scripts/00-16           one script per step above
 tests/                  unit test and offline smoke tests
 targets/                paper numbers from v1's appendix Tables 3, 4, 6, 7 and 8 (see targets/README.md)
 results/                CSV logs, tables, figures (committed)

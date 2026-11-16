@@ -4,7 +4,13 @@ import os
 # Must be set before torch is imported: lets unsupported MPS ops fall back to CPU.
 os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
+# scikit-learn 1.9 warns when a dependency runs its `delayed` under a plain joblib Parallel.
+# Harmless (only the thread-local sklearn config is not forwarded); the env var also covers joblib workers.
+_DELAYED_FILTER = "ignore:`sklearn.utils.parallel.delayed`:UserWarning"
+os.environ["PYTHONWARNINGS"] = ",".join(filter(None, [os.environ.get("PYTHONWARNINGS"), _DELAYED_FILTER]))
+
 import csv
+import warnings
 import json
 import platform
 import random
@@ -13,6 +19,8 @@ from pathlib import Path
 
 import numpy as np
 import torch
+
+warnings.filterwarnings("ignore", message=r".*sklearn\.utils\.parallel\.delayed.*", category=UserWarning)
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = Path(os.environ.get("MANTIS_DATA_DIR", ROOT / "data"))

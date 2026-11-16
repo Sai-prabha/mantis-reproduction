@@ -1,0 +1,7 @@
+| comparison                             | question                                          |   n |   mean_diff_pp |   wins |   ties |   losses |   gain_>1pp |   loss_>1pp | p      | p_holm   |
+|:---------------------------------------|:--------------------------------------------------|----:|---------------:|-------:|-------:|---------:|------------:|------------:|:-------|:---------|
+| M+W2mean (RF200) vs M (RF200)          | Do two windows help the paper's head?             |  44 |           1.63 |     32 |      2 |       10 |          27 |           8 | <0.001 | 0.004    |
+| M+W2mean (ridge) vs M (ridge)          | Do two windows help a ridge head?                 |  44 |           2.63 |     34 |      3 |        7 |          30 |           6 | <0.001 | <0.001   |
+| M+W2concat (RF200) vs M+W2mean (RF200) | Concatenate or average the windows?               |  44 |           0.12 |     23 |      2 |       19 |          12 |          10 | 0.503  | 1.000    |
+| M+W4mean (RF200) vs M+W2mean (RF200)   | Do four windows beat two?                         |  44 |           0.39 |     23 |      3 |       18 |          16 |          12 | 0.720  | 1.000    |
+| M+W2mean (ridge) vs MiniRocket (ridge) | Does windowed Mantis close the gap to MiniRocket? |  44 |          -1.81 |     18 |      2 |       24 |          12 |          19 | 0.409  | 1.000    |

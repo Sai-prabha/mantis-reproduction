@@ -27,12 +27,10 @@ from sklearn.metrics import balanced_accuracy_score  # noqa: E402
 from configs.datasets import archive_of, resolve  # noqa: E402
 from src.data import load_dataset  # noqa: E402
 
-WINDOW = 0.1  # fraction of the series length (aeon's dtw "window" parameter)
+WINDOW = 0.1
 
 
 def make_dtw_1nn(n_jobs: int):
-    # Signature checked against aeon 1.6.0:
-    # KNeighborsTimeSeriesClassifier(distance, distance_params, n_neighbors, weights, n_jobs)
     from aeon.classification.distance_based import KNeighborsTimeSeriesClassifier
     return KNeighborsTimeSeriesClassifier(n_neighbors=1, distance="dtw",
                                           distance_params={"window": WINDOW}, n_jobs=n_jobs)

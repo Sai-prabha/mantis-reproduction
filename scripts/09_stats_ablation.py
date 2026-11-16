@@ -39,7 +39,6 @@ from src.data import load_dataset  # noqa: E402
 from src.features import RIDGE_ALPHAS, STAT_NAMES, make_ridge, series_stats  # noqa: E402
 from src.models import cached_embeddings  # noqa: E402
 
-# Statistic groups (names from STAT_NAMES). "all" must reproduce fusion's M+S rows.
 SUBSETS = {
     "level": ["mean", "std", "min", "max"],
     "slope": ["slope"],
@@ -50,8 +49,6 @@ CLASSIFIERS = ["RF200", "ridge"]
 
 
 def select_stats(S: np.ndarray, n_channels: int, names: list[str]) -> np.ndarray:
-    """Columns of a series_stats array for the given statistic names.
-    series_stats is stat-major: columns [i*C:(i+1)*C] hold statistic i for all C channels."""
     idx = []
     for name in names:
         i = STAT_NAMES.index(name)

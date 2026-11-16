@@ -56,7 +56,6 @@ from src.features import (RIDGE_ALPHAS, make_minirocket_transform, make_ridge,  
                           series_stats)
 from src.models import cached_embeddings  # noqa: E402
 
-# (features, classifier) in the order they are run. Fixed before any results were seen.
 METHODS = [
     ("M", "RF200"), ("M+S", "RF200"),
     ("M", "ridge"), ("S", "ridge"), ("R", "ridge"),
@@ -152,7 +151,7 @@ def main():
             for feats, clf_name in todo:
                 parts = [] if feats == "none" else feats.split("+")
                 if any(p not in blocks for p in parts):
-                    continue  # MiniRocket failed above; logged there
+                    continue
                 try:
                     if parts:
                         Xtr = np.hstack([blocks[p][0] for p in parts])

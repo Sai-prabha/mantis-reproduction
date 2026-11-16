@@ -51,7 +51,6 @@ LABELS = {
 }
 TARGET = "MiniRocket+Mantis+Stats"
 
-# Planned comparisons (A vs B), fixed in advance. Two-sided tests, one Holm family.
 PLANNED = [
     ("Mantis+Stats (RF)", "Mantis (RF)", "Does scale information help Mantis?"),
     ("MiniRocket+Mantis", "MiniRocket", "Does Mantis add to MiniRocket?"),
@@ -60,23 +59,17 @@ PLANNED = [
     ("Mantis (ridge)", "Mantis (RF)", "Control: classifier change only"),
 ]
 
-# Added AFTER seeing the results, so reported separately from PLANNED with its own Holm family.
-# Best Mantis-only setup against the paper's protocol. Not additive with the two planned effects:
-# the statistics gain shrinks under ridge, so do not sum the individual gains.
 POST_HOC = [
     ("Mantis+Stats (ridge)", "Mantis (RF)", "Best Mantis-only setup vs the paper's protocol"),
     ("Mantis+Stats (ridge)", "Mantis (ridge)", "Do statistics still help with a ridge head?"),
 ]
 
-# Statistics ablation (scripts/09_stats_ablation.py): subset label -> row label.
 ABLATION_SUBSETS = {"level": "mean, std, min, max", "slope": "slope",
                     "diff": "diff mean, std, min, max", "all": "all nine"}
 
-# Methods in the CD diagram (more than ~6 makes it unreadable; the MCM covers the rest).
 CD_METHODS = ["Majority class", "Mantis (RF)", "Mantis+Stats (RF)", "MiniRocket",
               "MiniRocket+Mantis", "MiniRocket+Mantis+Stats"]
 
-# Groups defined from metadata before seeing results.
 GROUPS = {
     "all": lambda m: m.index == m.index,
     "univariate": lambda m: m.n_channels == 1,
@@ -87,7 +80,7 @@ GROUPS = {
     "at most 50 training cases": lambda m: m.n_train <= 50,
     "unequal length": lambda m: m.unequal_length == 1,
 }
-PRACTICAL = 0.01  # one accuracy point
+PRACTICAL = 0.01
 
 summary: dict = {}
 
@@ -100,7 +93,6 @@ def to_md(df: pd.DataFrame, name: str, floatfmt: str = ".4f", index: bool = Fals
 
 
 def holm(p: list[float]) -> list[float]:
-    """Holm step-down adjusted p-values."""
     p = np.asarray(p, dtype=float)
     order = np.argsort(p)
     adj = np.empty_like(p)
@@ -188,7 +180,6 @@ def overview(df, acc, bal):
 
 
 def comparison_family(acc, pairs, name, key):
-    """Two-sided Wilcoxon tests for `pairs`, Holm-corrected within this family only."""
     rows = []
     for a, b, question in pairs:
         if a in acc and b in acc:

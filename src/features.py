@@ -22,7 +22,7 @@ the ridge penalty is chosen by leave-one-out CV on the training data
 import inspect
 
 import numpy as np
-from sklearn.linear_model import RidgeClassifierCV
+from sklearn.linear_model import LogisticRegression, RidgeClassifierCV
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
 
@@ -77,4 +77,18 @@ def make_ridge(sizes: list[int], weighting: str = "equal"):
         w = block_weights(sizes)
         steps.append(FunctionTransformer(lambda Z, w=w: Z * w))
     steps.append(RidgeClassifierCV(alphas=RIDGE_ALPHAS))
+    return make_pipeline(*steps)
+
+
+def make_logreg(sizes: list[int], weighting: str = "equal", C: float = 1.0, max_iter: int = 2000):
+    """Same scaler and block weights as make_ridge, with a LogisticRegression head.
+
+    Used by scripts/14_proba_metrics.py: unlike RidgeClassifierCV it has
+    predict_proba, so AUROC, log loss and ECE can be computed (lecture week 8).
+    C is scikit-learn's default; it is not tuned on the test set."""
+    steps = [StandardScaler()]
+    if weighting == "equal" and len(sizes) > 1:
+        w = block_weights(sizes)
+        steps.append(FunctionTransformer(lambda Z, w=w: Z * w))
+    steps.append(LogisticRegression(C=C, max_iter=max_iter))
     return make_pipeline(*steps)

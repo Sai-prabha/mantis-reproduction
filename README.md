@@ -44,7 +44,7 @@ $env:MANTIS_CACHE_DIR = "$env:USERPROFILE\mantis-work\cache"
 Run `python scripts/00_dataset_stats.py --datasets all` and
 `python scripts/02_zero_shot.py` from the repository root first, so the
 archives and the published CLS embeddings are already cached. These scripts
-read that cache and can be pulled or downloaded from the [`main` branch](https://github.com/Sai-prabha/mantis-reproduction/tree/main)
+read that cache and can be pulled or downloaded from the [`main`](https://github.com/Sai-prabha/mantis-reproduction/tree/main) branch.
 
 ## 2. Data
 
